@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Barcellona • 11–14 Giugno</title>
+<meta name="description" content="Spinoff FantaViaggio · 11–14 Giugno 2026 · 9 partecipanti">
+<meta property="og:title" content="Barcellona 2026 🌊">
+<meta property="og:description" content="Spinoff FantaViaggio · 11–14 Giugno · 9 partecipanti">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://calcagno-91.github.io/barcellona-2026/">
+<meta property="og:image" content="https://calcagno-91.github.io/barcellona-2026/preview.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Barcellona 2026 🌊">
+<meta name="twitter:description" content="Spinoff FantaViaggio · 11–14 Giugno · 9 partecipanti">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Barcellona">
@@ -240,7 +249,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--blu);
 .scrap-vid{
   position:absolute;inset:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.32);
   border-radius:inherit;
   pointer-events:none;
 }
@@ -874,7 +882,7 @@ function buildScrapbook(wrap, day, photos){
     var isVid=p.type==='video';
     var style=cls==='scrap-pol'?'display:block;width:100%;aspect-ratio:1;object-fit:cover;':'display:block;width:100%;height:auto;';
     if(isVid){
-      return '<video src="'+p.src+'#t=0.5" muted playsinline preload="metadata" style="'+style+'"></video>'
+      return '<video src="'+p.src+'#t=0.5" muted playsinline preload="none" style="'+style+'background:#111;"></video>'
         +'<div class="scrap-vid">'
         +'<div class="scrap-vid-play"><svg viewBox="0 0 24 24" fill="#1A2E4A" width="22" height="22"><polygon points="6 4 20 12 6 20"/></svg></div>'
         +'<div class="scrap-vid-badge">VIDEO</div>'
@@ -1100,10 +1108,15 @@ async function dbAdd(day, photo){
     var blob, mime, ext;
 
     if(photo.blob){
-      // Da camera — usa il tipo reale del blob
       blob = photo.blob;
-      mime = photo.blob.type || 'video/webm';
-      ext = mime.includes('mp4') ? 'mp4' : 'webm';
+      mime = photo.blob.type || 'application/octet-stream';
+      // Mappa mime → estensione corretta per qualsiasi tipo
+      var blobMimeMap = {
+        'image/jpeg':'jpg','image/jpg':'jpg','image/png':'png',
+        'image/webp':'webp','image/heic':'heic','image/heif':'heif',
+        'video/mp4':'mp4','video/webm':'webm','video/quicktime':'mov'
+      };
+      ext = blobMimeMap[mime] || (mime.startsWith('video') ? 'mp4' : 'jpg');
 
     } else if(photo.file){
       var f = photo.file;
