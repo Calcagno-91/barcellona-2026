@@ -868,7 +868,7 @@ function buildScrapbook(wrap, day, photos){
     var el=document.createElement('div');
     el.className=cls;
     if(heightStyle) el.style.cssText=heightStyle;
-    el.innerHTML=(tape?'<div class="'+tape+'"></div>':'')+makeMedia(p,cls)+(showCap?'<div class="'+capCls+'">'+p.name+'</div>':'')+'<button class="scrap-del" data-day="'+day+'" data-key="'+key+'">✕</button>';
+    el.innerHTML=(tape?'<div class="'+tape+'"></div>':'')+makeMedia(p,cls)+'<div class="'+capCls+'">Barcellona 2026</div>'+'<button class="scrap-del" data-day="'+day+'" data-key="'+key+'">✕</button>';
     el.addEventListener('click',function(){openLb(day,i,photos);});
     el.querySelector('.scrap-del').addEventListener('click',function(e){e.stopPropagation();delItem(parseInt(this.dataset.day),this.dataset.key);});
     makeDraggable(el, day, i, photos);
