@@ -238,9 +238,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--blu);
 .scrap-pol:hover .scrap-del,
 .scrap-full:hover .scrap-del{display:flex;}
 .scrap-vid{
-  position:absolute;top:10px;left:10px;
-  background:rgba(0,0,0,.6);color:white;font-size:.52rem;
-  padding:2px 5px;border-radius:3px;
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.32);
+  border-radius:inherit;
+  pointer-events:none;
+}
+.scrap-vid-play{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.92);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+  margin-bottom:6px;
+}
+.scrap-vid-play svg{margin-left:3px;}
+.scrap-vid-badge{
+  font-size:.58rem;font-weight:700;letter-spacing:.1em;
+  background:rgba(26,46,74,.85);color:white;
+  padding:2px 7px;border-radius:100px;
+  font-family:'DM Sans',sans-serif;
 }
 /* Nastro adesivo */
 .scrap-tape{
@@ -857,7 +873,14 @@ function buildScrapbook(wrap, day, photos){
   function makeMedia(p, cls){
     var isVid=p.type==='video';
     var style=cls==='scrap-pol'?'display:block;width:100%;aspect-ratio:1;object-fit:cover;':'display:block;width:100%;height:auto;';
-    return (isVid?'<video src="'+p.src+'" muted playsinline style="'+style+'"></video><div class="scrap-vid">🎬</div>':'<img src="'+p.src+'" alt="" loading="lazy" style="'+style+'">');
+    if(isVid){
+      return '<video src="'+p.src+'#t=0.5" muted playsinline preload="metadata" style="'+style+'"></video>'
+        +'<div class="scrap-vid">'
+        +'<div class="scrap-vid-play"><svg viewBox="0 0 24 24" fill="#1A2E4A" width="22" height="22"><polygon points="6 4 20 12 6 20"/></svg></div>'
+        +'<div class="scrap-vid-badge">VIDEO</div>'
+        +'</div>';
+    }
+    return '<img src="'+p.src+'" alt="" loading="lazy" style="'+style+'">';
   }
 
   function makeEl(p, i, cls, heightStyle){
@@ -1077,9 +1100,10 @@ async function dbAdd(day, photo){
     var blob, mime, ext;
 
     if(photo.blob){
-      // Da camera — webm
+      // Da camera — usa il tipo reale del blob
       blob = photo.blob;
-      mime = 'video/webm'; ext = 'webm';
+      mime = photo.blob.type || 'video/webm';
+      ext = mime.includes('mp4') ? 'mp4' : 'webm';
 
     } else if(photo.file){
       var f = photo.file;
