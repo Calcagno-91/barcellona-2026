@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barcellona • 11–14 Giugno</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Barcellona">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1A2E4A">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAf0lEQVR4nO3WQQ2AMBBEUXQgAiGIwRdOkIUGsoTp0pf8a5N5l2aX6zxat8QXAKQXVAHrtrcOIB1AuvkAlS8PAABgPEBFCwAAAAAAADD9KQEAMDvgs7cAAAAAAAAAAAAA/wM86pXFAAAANcBoAaQDSAeQDiBdf0DlNBghgHTtATc/p8dLtIuLCAAAAABJRU5ErkJggg==">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAAf0lEQVR4nO3WQQ2AMBBEUXQgAiGIwRdOkIUGsoTp0pf8a5N5l2aX6zxat8QXAKQXVAHrtrcOIB1AuvkAlS8PAABgPEBFCwAAAAAAADD9KQEAMDvgs7cAAAAAAAAAAAAA/wM86pXFAAAANcBoAaQDSAeQDiBdf0DlNBghgHTtATc/p8dLtIuLCAAAAABJRU5ErkJggg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{--oro:#C8A96E;--rosso:#D94F3D;--blu:#1A2E4A;--sabbia:#F5EFE6;--grigio:#8A8A8A;--bianco:#FDFBF8;--verde:#3a7d5e;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bianco);color:var(--blu);overflow-x:hidden;}
+.hero{position:relative;height:42vh;min-height:260px;background:var(--blu);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(200,169,110,.18),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(217,79,61,.12),transparent 50%),linear-gradient(135deg,#0D1E35,#1A2E4A 50%,#0F2340);}
+.hero-pat{position:absolute;inset:0;opacity:.04;background-image:repeating-linear-gradient(45deg,var(--oro) 0,var(--oro) 1px,transparent 1px,transparent 40px);}
+.flag{position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--rosso),var(--oro),var(--rosso));}
+.hero-content{position:relative;z-index:2;text-align:center;padding:1.5rem;}
+.eyebrow{font-size:.68rem;letter-spacing:.35em;text-transform:uppercase;color:var(--oro);margin-bottom:.8rem;opacity:0;animation:up .8s .2s forwards;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(3rem,10vw,6rem);font-weight:700;color:var(--bianco);line-height:.9;margin-bottom:.7rem;opacity:0;animation:up .9s .4s forwards;}
+.hero-title span{color:var(--oro);font-style:italic;}
+.hero-dates{font-family:'Playfair Display',serif;font-size:clamp(.9rem,2.5vw,1.2rem);color:rgba(253,251,248,.6);margin-bottom:.3rem;opacity:0;animation:up .9s .6s forwards;}
+.hero-sub{font-size:.82rem;letter-spacing:.08em;color:rgba(253,251,248,.55);opacity:0;animation:up .9s .75s forwards;text-transform:none;font-weight:500;}
+.scroll-h{display:none;}
+.nav{position:sticky;top:0;z-index:200;background:rgba(253,251,248,.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(200,169,110,.2);}
+.nav-inner{max-width:980px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.tab{flex:none;padding:1rem 1.3rem;font-size:.73rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--grigio);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .25s;white-space:nowrap;}
+.tab:hover{color:var(--blu);}
+.tab.active{color:var(--rosso);border-bottom-color:var(--rosso);}
+.sec{display:none;animation:fade .35s ease;}
+/* Polaroid draggabile — touch + mouse */
+.scrap-drag-ghost{
+  position:fixed;pointer-events:none;z-index:9999;
+  opacity:0.85;transform:rotate(-3deg) scale(1.05);
+  box-shadow:0 16px 48px rgba(0,0,0,.35);
+  transition:transform .1s;
+}
+.scrap-drag-over{
+  outline:3px dashed var(--oro)!important;
+  outline-offset:4px;
+  background:rgba(200,169,110,.08)!important;
+}
+.scrap-dragging{opacity:0.25;}
+/* Indicatore swipe mobile */
+.swipe-hint{display:none;position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);background:rgba(26,46,74,.75);color:white;font-size:.7rem;padding:.35rem .9rem;border-radius:100px;pointer-events:none;z-index:500;animation:fade .4s ease;}
+@media(max-width:600px){.swipe-hint{display:block;}}
+.sec.active{display:block;}
+.dh{padding:3rem 1.5rem 1.5rem;max-width:980px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.dlabel{font-size:.67rem;letter-spacing:.35em;text-transform:uppercase;color:var(--oro);font-weight:600;margin-bottom:.3rem;}
+.dtitle{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,4vw,2.3rem);}
+.dsub{font-size:.82rem;color:var(--grigio);margin-top:.2rem;}
+.badge{background:var(--sabbia);border:1px solid rgba(200,169,110,.3);border-radius:100px;padding:.3rem .9rem;font-size:.72rem;color:var(--grigio);white-space:nowrap;}
+.mapwrap{max-width:980px;margin:0 auto;padding:0 1.5rem 0;}
+.map-outer{border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.14);position:relative;height:340px;}
+.leaflet-map{width:100%;height:100%;}
+.leaflet-container{font-family:'DM Sans',sans-serif;}
+.leaflet-popup-content-wrapper{border-radius:14px!important;box-shadow:0 8px 32px rgba(0,0,0,.18)!important;border:1px solid rgba(200,169,110,.2)!important;padding:0!important;}
+.leaflet-popup-content{margin:12px 16px!important;}
+.leaflet-popup-tip{background:white!important;}
+.pop-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--blu);margin-bottom:2px;}
+.pop-sub{font-size:.72rem;color:var(--grigio);margin-bottom:8px;}
+.pop-link{display:inline-flex;align-items:center;gap:4px;font-size:.73rem;color:var(--rosso);font-weight:600;text-decoration:none;background:rgba(217,79,61,.08);padding:.2rem .6rem;border-radius:100px;}
+.pop-link:hover{background:rgba(217,79,61,.15);}
+.map-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0 1.8rem;}
+.map-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.5rem 1.1rem;background:var(--blu);color:white;border-radius:100px;font-size:.73rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:background .2s,transform .15s,box-shadow .2s;box-shadow:0 2px 8px rgba(26,46,74,.25);}
+.map-btn:hover{background:var(--rosso);transform:translateY(-2px);box-shadow:0 6px 20px rgba(217,79,61,.3);}
+.map-btn svg{width:14px;height:14px;flex-shrink:0;}
+/* Custom marker */
+.lf-marker{width:36px;height:44px;position:relative;}
+.lf-marker-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:.85rem;box-shadow:0 4px 12px rgba(0,0,0,.35);border:2.5px solid white;color:white;}
+.lf-marker-pin{width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;margin:0 auto;}
+@media(max-width:580px){.map-outer{height:260px;}}
+.stops{max-width:980px;margin:0 auto;padding:.2rem 1.5rem 2rem;}
+.card{display:grid;grid-template-columns:50px 1fr;gap:0 1.3rem;margin-bottom:1.7rem;position:relative;}
+.card::before{content:'';position:absolute;left:24px;top:50px;width:2px;height:calc(100% + 1.7rem);background:linear-gradient(to bottom,rgba(200,169,110,.3),transparent);}
+.card:last-child::before{display:none;}
+.cnum{width:50px;height:50px;border-radius:50%;background:var(--blu);color:var(--oro);font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;z-index:1;box-shadow:0 4px 16px rgba(26,46,74,.22);}
+.cnum.red{background:var(--rosso);color:white;}
+.cnum.gold{background:var(--oro);color:var(--blu);}
+.cnum.green{background:var(--verde);color:white;}
+.cnum.night{background:#1a1040;color:var(--oro);}
+.cbody{background:white;border:1px solid rgba(200,169,110,.14);border-radius:14px;padding:1.2rem 1.4rem;box-shadow:0 2px 14px rgba(0,0,0,.04);transition:box-shadow .25s,transform .25s;}
+.cbody:hover{box-shadow:0 8px 32px rgba(0,0,0,.09);transform:translateY(-2px);}
+.ctop{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;margin-bottom:.45rem;flex-wrap:wrap;}
+.cname{font-family:'Playfair Display',serif;font-size:1.08rem;font-weight:700;}
+.ctime{font-size:.68rem;color:white;background:var(--rosso);border-radius:100px;padding:.2rem .6rem;white-space:nowrap;flex-shrink:0;}
+.ctime.night{background:#1a1040;}
+.ctime.green{background:var(--verde);}
+.ctime.gold{background:var(--oro);color:var(--blu);}
+.ctag{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);font-weight:600;margin-bottom:.38rem;}
+.cdesc{font-size:.85rem;line-height:1.7;color:#454545;margin-bottom:.6rem;}
+/* Expand button */
+.card-expand-btn{display:inline-flex;align-items:center;gap:.3rem;background:none;border:none;color:var(--oro);font-size:.75rem;font-weight:600;cursor:pointer;padding:0;margin-bottom:.1rem;transition:opacity .2s;}
+.card-expand-btn:hover{opacity:.7;}
+.card-expand-btn svg{transition:transform .3s;}
+.card-expand-btn.open svg{transform:rotate(180deg);}
+/* Expanded details */
+.card-details{display:none;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(200,169,110,.18);}
+.card-details.open{display:block;animation:fade .25s ease;}
+.card-details p{font-size:.82rem;line-height:1.72;color:#3a3a3a;margin-bottom:.5rem;}
+.card-details p:last-child{margin-bottom:0;}
+.card-detail-row{display:flex;align-items:baseline;gap:.5rem;font-size:.8rem;margin-bottom:.35rem;color:#454545;}
+.card-detail-row strong{color:var(--blu);min-width:70px;flex-shrink:0;}
+.card-detail-row a{color:var(--rosso);text-decoration:none;font-weight:600;}
+.card-detail-row a:hover{text-decoration:underline;}
+.tr{display:flex;align-items:center;gap:.6rem;margin:-0.4rem 0 1.6rem 63px;font-size:.74rem;color:var(--grigio);}
+.tl{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:50%;font-weight:700;font-size:.65rem;color:white;flex-shrink:0;}
+.options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem;max-width:980px;margin:1rem auto 2rem;padding:0 1.5rem;}
+.opt-card{background:white;border:1px solid rgba(200,169,110,.15);border-radius:18px;overflow:hidden;box-shadow:0 3px 18px rgba(0,0,0,.05);transition:transform .25s,box-shadow .25s;}
+.opt-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.1);}
+.opt-inner{padding:1.4rem;}
+.opt-emoji{font-size:2rem;margin-bottom:.5rem;}
+.opt-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:.2rem;}
+.opt-tag{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);font-weight:600;margin-bottom:.5rem;}
+.opt-desc{font-size:.81rem;line-height:1.65;color:#454545;margin-bottom:.75rem;}
+.opt-pills{display:flex;flex-wrap:wrap;gap:.4rem;}
+.iw{max-width:980px;margin:0 auto;padding:1rem 1.5rem 4rem;}
+.ig{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1rem;}
+.ic{background:white;border-radius:14px;padding:1.3rem 1.4rem;border:1px solid rgba(200,169,110,.14);box-shadow:0 2px 12px rgba(0,0,0,.04);}
+.ii{font-size:1.3rem;margin-bottom:.5rem;}
+.it{font-weight:600;font-size:.84rem;margin-bottom:.5rem;color:var(--blu);}
+.id{font-size:.79rem;color:#454545;line-height:1.68;}
+.id strong{color:var(--blu);}
+.mlines{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem;}
+.mb{display:inline-flex;font-size:.71rem;font-weight:700;border-radius:100px;padding:.22rem .6rem;color:white;}
+.pl{list-style:none;margin-top:.4rem;}
+.pl li{display:flex;justify-content:space-between;font-size:.77rem;padding:.28rem 0;border-bottom:1px solid #f0ece6;}
+.pl li:last-child{border:none;}
+.pln{font-weight:700;color:var(--rosso);font-family:monospace;font-size:.82rem;}
+.photo-section{max-width:980px;margin:0 auto;padding:0 1.5rem 4rem;}
+.photo-header{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap;}
+.photo-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;}
+.photo-title span{color:var(--oro);}
+.photo-meta{display:flex;align-items:center;gap:.5rem;}
+.photo-count{font-size:.68rem;color:var(--grigio);background:var(--sabbia);border-radius:100px;padding:.18rem .6rem;}
+/* Upload bar — tutto in una riga compatta */
+.upload-bar{
+  display:flex;align-items:center;gap:.5rem;
+  background:var(--sabbia);border:1.5px dashed rgba(200,169,110,.4);
+  border-radius:14px;padding:.75rem 1rem;margin-bottom:.7rem;
+  cursor:pointer;transition:border-color .2s,background .2s;flex-wrap:wrap;
+}
+.upload-bar:hover,.upload-bar.over{border-color:var(--oro);background:rgba(200,169,110,.1);border-style:solid;}
+.upload-bar-icon{font-size:1.3rem;flex-shrink:0;}
+.upload-bar-text{flex:1;min-width:100px;}
+.upload-bar-text strong{font-size:.8rem;color:var(--blu);display:block;}
+.upload-bar-text span{font-size:.7rem;color:var(--grigio);}
+.upload-bar-btns{display:flex;gap:.4rem;flex-shrink:0;}
+.ubtn{display:inline-flex;align-items:center;gap:.3rem;padding:.35rem .75rem;border-radius:100px;font-size:.7rem;font-weight:600;cursor:pointer;border:none;white-space:nowrap;transition:opacity .2s,transform .15s;line-height:1;}
+.ubtn:hover{opacity:.85;transform:translateY(-1px);}
+.ubtn svg{width:11px;height:11px;flex-shrink:0;}
+.ubtn-cam{background:var(--verde);color:white;}
+.ubtn-dl{background:transparent;color:var(--grigio);border:1.5px solid #ddd;font-size:.68rem;}
+.ubtn-dl:hover{color:var(--blu);border-color:var(--blu);opacity:1;}
+.pstatus{font-size:.72rem;text-align:center;padding:.25rem;min-height:1.1rem;color:var(--grigio);}
+.pstatus.ok{color:var(--verde);}
+.pstatus.err{color:var(--rosso);}
+/* SCRAPBOOK — foto grandi + polaroid inclinate */
+.scrap-wrap{
+  background:linear-gradient(160deg,#f7efe4 0%,#ede4d8 100%);
+  border-radius:16px;
+  padding:18px 14px 14px;
+  overflow:visible;
+}
+/* Riga: foto grande + gruppetto polaroid affiancati */
+.scrap-row{
+  display:flex;gap:14px;margin-bottom:18px;align-items:flex-start;
+}
+/* Foto grande — stile polaroid */
+.scrap-big{
+  flex:1.6;min-width:0;position:relative;cursor:pointer;
+  background:white;
+  padding:7px 7px 28px;
+  box-shadow:0 6px 20px rgba(0,0,0,.18),0 2px 6px rgba(0,0,0,.1);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+  z-index:1;
+}
+.scrap-big:nth-of-type(odd){transform:rotate(-1.2deg);}
+.scrap-big:nth-of-type(even){transform:rotate(0.8deg);}
+.scrap-big:hover{transform:rotate(0deg) scale(1.04) translateY(-4px) !important;box-shadow:0 14px 40px rgba(0,0,0,.25);z-index:10;}
+.scrap-big img,.scrap-big video{display:block;width:100%;height:auto;}
+.scrap-big-cap{
+  text-align:center;font-size:.58rem;color:#aaa;
+  font-family:'DM Sans',sans-serif;margin-top:5px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+/* Gruppo verticale di 2 polaroid */
+.scrap-group{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding-top:8px;}
+/* Polaroid piccola */
+.scrap-pol{
+  background:white;
+  padding:5px 5px 20px;
+  position:relative;cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.2),0 1px 4px rgba(0,0,0,.1);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+  z-index:1;
+}
+.scrap-pol:nth-child(odd){ transform:rotate(-3.5deg);}
+.scrap-pol:nth-child(even){transform:rotate(3deg);}
+.scrap-pol:hover{transform:rotate(0deg) scale(1.12) translateY(-5px) !important;box-shadow:0 16px 44px rgba(0,0,0,.28);z-index:20;}
+.scrap-pol img,.scrap-pol video{display:block;width:100%;aspect-ratio:1;object-fit:cover;}
+.scrap-pol-cap{text-align:center;font-size:.5rem;color:#aaa;margin-top:3px;font-family:'DM Sans',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* Foto a piena larghezza */
+.scrap-full{
+  position:relative;cursor:pointer;
+  background:white;
+  padding:7px 7px 28px;
+  box-shadow:0 6px 20px rgba(0,0,0,.16),0 2px 6px rgba(0,0,0,.09);
+  margin-bottom:18px;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+}
+.scrap-full:nth-of-type(odd){transform:rotate(-0.6deg);}
+.scrap-full:nth-of-type(even){transform:rotate(0.5deg);}
+.scrap-full:hover{transform:rotate(0deg) scale(1.02) !important;box-shadow:0 12px 36px rgba(0,0,0,.2);}
+.scrap-full img,.scrap-full video{display:block;width:100%;height:auto;}
+.scrap-full-cap{
+  text-align:center;font-size:.58rem;color:#aaa;
+  font-family:'DM Sans',sans-serif;margin-top:5px;
+}
+/* Delete button condiviso */
+.scrap-del{
+  position:absolute;top:5px;right:5px;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(217,79,61,.85);color:white;
+  border:1.5px solid white;font-size:.6rem;
+  cursor:pointer;display:none;align-items:center;justify-content:center;z-index:30;
+}
+.scrap-big:hover .scrap-del,
+.scrap-pol:hover .scrap-del,
+.scrap-full:hover .scrap-del{display:flex;}
+.scrap-vid{
+  position:absolute;top:10px;left:10px;
+  background:rgba(0,0,0,.6);color:white;font-size:.52rem;
+  padding:2px 5px;border-radius:3px;
+}
+/* Nastro adesivo */
+.scrap-tape{
+  position:absolute;top:-10px;left:50%;
+  transform:translateX(-50%) rotate(-1.5deg);
+  width:40px;height:15px;
+  background:rgba(255,215,80,.55);
+  border-radius:2px;z-index:5;
+  box-shadow:0 1px 4px rgba(0,0,0,.15);
+}
+.scrap-tape-r{
+  position:absolute;top:-10px;right:20%;
+  transform:rotate(2.5deg);
+  width:34px;height:15px;
+  background:rgba(200,169,110,.5);
+  border-radius:2px;z-index:5;
+}
+.scrap-empty{
+  text-align:center;padding:3rem 1rem;
+  color:#b0a090;font-size:.83rem;
+}
+.scrap-empty span{display:block;font-size:2.5rem;margin-bottom:.6rem;opacity:.5;}
+
+/* Download toast */
+.dl-toast{
+  position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);
+  background:#1A2E4A;color:white;border-radius:100px;
+  padding:.6rem 1.4rem;font-size:.78rem;font-weight:600;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);z-index:2000;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+}
+.dl-toast.show{transform:translateX(-50%) translateY(0);}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:900;align-items:center;justify-content:center;padding:1rem;}
+.modal-bg.open{display:flex;}
+.modal-box{background:#111;border-radius:20px;overflow:hidden;max-width:480px;width:100%;position:relative;}
+.modal-close{position:absolute;top:.7rem;right:.9rem;background:none;border:none;color:white;font-size:1.6rem;cursor:pointer;z-index:10;line-height:1;opacity:.7;}
+.modal-close:hover{opacity:1;}
+#cam-video{width:100%;display:block;background:#000;max-height:55vh;object-fit:cover;}
+.cam-controls{padding:1rem;display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;background:#111;}
+#cam-canvas{display:none;}
+.cam-fallback{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.cam-fallback-box{background:white;border-radius:16px;padding:2rem;max-width:380px;width:100%;text-align:center;}
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;padding:1rem;}
+.lightbox.open{display:flex;}
+.lb-close{position:absolute;top:1rem;right:1.2rem;background:none;border:none;color:white;font-size:2rem;cursor:pointer;opacity:.7;line-height:1;}
+.lb-close:hover{opacity:1;}
+#lb-img{display:none;max-width:90vw;max-height:75vh;width:auto;height:auto;object-fit:contain;border-radius:8px;}
+#lb-vid{display:none;max-width:90vw;max-height:75vh;width:auto;height:auto;border-radius:8px;background:#000;}
+.lb-meta{color:rgba(255,255,255,.5);font-size:.76rem;text-align:center;}
+.lb-nav{display:flex;gap:.7rem;}
+.lb-nav button{background:rgba(255,255,255,.12);border:none;color:white;border-radius:100px;padding:.38rem 1rem;cursor:pointer;font-size:.8rem;transition:background .2s;}
+.lb-nav button:hover{background:rgba(255,255,255,.25);}
+.lb-dl{background:var(--oro)!important;color:var(--blu)!important;font-weight:700;}
+footer{text-align:center;padding:2rem;font-size:.72rem;color:var(--grigio);border-top:1px solid rgba(0,0,0,.06);}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@media(max-width:580px){
+  .card{grid-template-columns:40px 1fr;gap:0 1rem;}
+  .cnum{width:40px;height:40px;font-size:.8rem;}
+  .card::before{left:19px;}
+  .tr{margin-left:52px;}
+  .map-canvas{height:240px!important;}
+  .photo-acts{gap:.35rem;}
+}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-pat"></div><div class="flag"></div>
+  <div class="hero-content">
+    <p class="eyebrow">Itinerario di viaggio · Spagna</p>
+    <h1 class="hero-title">Barce<span>llona</span></h1>
+    <p class="hero-dates">11 — 14 Giugno 2026</p>
+    <p class="hero-sub">Spin<span style="font-style:italic;color:var(--oro);">off</span> FantaViaggio</p>
+  </div>
+  <div class="scroll-h"><div class="scroll-line"></div>scorri</div>
+</section>
+<nav class="nav">
+  <div class="nav-inner">
+    <button class="tab active" onclick="go(4)">📌 Info utili</button>
+    <button class="tab" onclick="go(0)">Gio 11 · Arrivo</button>
+    <button class="tab" onclick="go(1)">Ven 12 · Gaudí</button>
+    <button class="tab" onclick="go(2)">Sab 13 · Liberi</button>
+    <button class="tab" onclick="go(3)">Dom 14 · Partenza</button>
+  </div>
+</nav>
+<section class="sec" id="d0">
+  <div class="dh"><div><div class="dlabel">Giorno 1 · Giovedì 11 Giugno</div><h2 class="dtitle">Arrivo &amp; Casa Batlló</h2><p class="dsub">Atterraggio alle 16:00 — poi subito Gaudí</p></div><span class="badge">✈️ Arr. 16:00</span></div>
+  <div class="mapwrap"><div class="map-outer" id="mo0"><div class="leaflet-map" id="lmap0"></div></div>
+  <div class="map-actions"><button class="map-btn" onclick="openMapsFromHere(0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Apri percorso da qui in Google Maps</button></div></div>
+  <div class="stops">
+    <div class="card"><div class="cnum">✈</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🛬 Aeroporto → Appartamento</div><div class="cname">El Prat T1 → Casp 74, Eixample</div></div><span class="ctime">16:00–17:30</span></div>
+      <p class="cdesc">Dall'aeroporto all'appartamento: ~35–50 minuti.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Tre opzioni per raggiungere casa dall'aeroporto:</p>
+        <div class="card-detail-row"><strong>Aerobús A1</strong>ogni 5 min · 35 min · 5.90€ → Plaça Catalunya, poi ~10 min a piedi o taxi breve fino a Casp 74. La scelta più rapida e comoda.</div>
+        <div class="card-detail-row"><strong>Metro L9 Sud</strong>~50 min · 5.15€ → cambio a Torrassa (L1) o a Zona Universitària (L3). Più lento ma economico con bagagli non troppo pesanti.</div>
+        <div class="card-detail-row"><strong>Taxi</strong>tariffa fissa aeroporto → centro = <strong>39€</strong> · ~25 min. Consigliato se siete in 3–4 con valigie grandi.</div>
+      </div>
+    </div></div>
+
+    <div class="card"><div class="cnum red">1</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🏡 Tardo Pomeriggio · UNESCO</div><div class="cname">Casa Batlló</div></div><span class="ctime">18:30–20:00</span></div>
+      <p class="cdesc">A 10 minuti a piedi dall'appartamento lungo il Passeig de Gràcia. La facciata a scaglie di drago è uno degli edifici più iconici al mondo.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Il proprietario originale, Josep Batlló, voleva semplicemente demolire l'edificio esistente. Gaudí lo convinse a ristrutturarlo invece — il risultato fu così scandaloso che i barcellonesi la chiamarono subito <em>"Casa dels ossos"</em> (casa delle ossa) per le colonne scheletriche della facciata.</p>
+        <p>Il tetto a squame rappresenta il dorso di un drago sconfitto da Sant Jordi (San Giorgio), patrono della Catalogna. La croce a quattro braccia in cima è la lancia del santo conficcata nella bestia. L'intera facciata è un racconto mitologico travestito da edificio.</p>
+        <p>Gaudí non usò mai righetti o squadre: tutto fu progettato a mano libera e con modelli in gesso appesi a catene. Sosteneva che la natura non produce angoli retti — e in tutto Casa Batlló non ce n'è praticamente nessuno.</p>
+      </div>
+    </div></div>
+
+    <div class="card"><div class="cnum gold">2</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🍽 Cena · Eixample</div><div class="cname">Cena nel quartiere</div></div><span class="ctime gold">21:00</span></div>
+      <p class="cdesc">Il quartiere Eixample intorno all'appartamento è ricco di ristoranti ottimi a ogni fascia di prezzo.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Una regola d'oro a Barcellona: più ci si allontana dalla Rambla, meglio si mangia e meno si spende. L'Eixample è un quartiere residenziale — i ristoranti qui servono i barcellonesi, non i turisti, e i prezzi lo riflettono.</p>
+        <p>Cercate locali con il <em>"menú del día"</em>: primo, secondo, dessert, pane e bevanda per 12–15€. È la tradizione spagnola del pranzo abbondante — la sera i catalani mangiano leggero e tardi (dopo le 21:00 è normale, le 22:00 è comune).</p>
+      </div>
+    </div></div>
+  </div>
+  <div id="ps0"></div>
+</section>
+<section class="sec" id="d1">
+  <div class="dh"><div><div class="dlabel">Giorno 2 · Venerdì 12 Giugno</div><h2 class="dtitle">Sagrada Família &amp; Park Güell</h2><p class="dsub">Il meglio di Gaudí in una giornata</p></div><span class="badge">🎨 Eixample + Gràcia</span></div>
+  <div class="mapwrap"><div class="map-outer" id="mo1"><div class="leaflet-map" id="lmap1"></div></div>
+  <div class="map-actions"><button class="map-btn" onclick="openMapsFromHere(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Apri percorso da qui in Google Maps</button></div></div>
+  <div class="stops">
+    <div class="card"><div class="cnum">1</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">⛪ Mattina · UNESCO</div><div class="cname">Sagrada Família</div></div><span class="ctime">09:00–12:00</span></div>
+      <p class="cdesc">La cattedrale più straordinaria del mondo, in costruzione dal 1882 — e finalmente vicina al completamento. Un'esperienza visiva che non si dimentica.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>La prima pietra fu posata nel 1882 — Gaudí prese in mano il progetto un anno dopo e lo trasformò completamente. Quando morì investito da un tram nel 1926, era completata solo la cripta e una torre. I barcellonesi lo scambiarono per un mendicante: era così povero e trasandato che nessuno lo riconobbe.</p>
+        <p>Gaudí sapeva che non avrebbe mai visto l'opera finita. Disse: <em>"Il mio cliente non ha fretta"</em> — riferendosi a Dio. Lasciò istruzioni dettagliatissime, ma nel 1936 durante la Guerra Civile i suoi modelli e disegni furono bruciati. Tutto ciò che vedete è stato ricostruito da zero con i frammenti rimasti.</p>
+        <p>Le 18 torri rappresentano i 12 apostoli, i 4 evangelisti, la Vergine Maria e Gesù Cristo. La Torre di Gesù Cristo — la più alta, 172,5 metri — è stata completata nel 2026 e sarà la struttura religiosa più alta del mondo, superando la Cattedrale di Ulm. Per la prima volta in oltre un secolo di costruzione, la Sagrada Família è finalmente completa.</p>
+      </div>
+    </div></div>
+
+    <div class="tr"><span class="tl" style="background:#3bbf3b;">3</span> Metro L3 → Vallcarca oppure Bus 24 (~20 min)</div>
+
+    <div class="card"><div class="cnum green">2</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🌿 Pomeriggio · UNESCO</div><div class="cname">Park Güell</div></div><span class="ctime green">13:30–16:00</span></div>
+      <p class="cdesc">Il parco fiabesco di Gaudí aggrappato alla collina con vista panoramica su tutta Barcellona e sul mare.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Il Park Güell nacque come speculazione immobiliare fallita. Eusebi Güell, il mecenate di Gaudí, voleva costruire una città-giardino per l'alta borghesia barcellonese sul modello inglese. Vendettero solo 2 delle 60 ville previste — una la comprò Gaudí stesso, che ci visse per 20 anni. Oggi è il suo museo-casa.</p>
+        <p>Il celebre geco policromo all'ingresso (che tutti chiamano "drago" ma è in realtà una salamandra) è diventato il simbolo di Barcellona. È costruito con la tecnica del <em>trencadís</em> — frammenti di ceramica e vetro rotti e ricomposti — che Gaudí inventò per usare gli scarti delle fabbriche.</p>
+        <p>La grande terrazza ondulata con le panchine colorate non è solo bella: è ingegneristica. Funge da tetto del mercato coperto sottostante, e le colonne incanalano l'acqua piovana in una cisterna che irrigava tutto il parco.</p>
+      </div>
+    </div></div>
+
+    <div class="card"><div class="cnum gold">3</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🌮 Aperitivo · Quartiere Gràcia</div><div class="cname">Plaça del Sol</div></div><span class="ctime gold">17:00–19:00</span></div>
+      <p class="cdesc">Scendendo dal Park Güell si entra naturalmente nel quartiere Gràcia, il più bohémien e autentico di Barcellona.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Gràcia era un comune indipendente fino al 1897, quando fu annessa a Barcellona contro la volontà dei suoi abitanti. Ancora oggi i gracienc si sentono "separati" — hanno la propria identità, le proprie feste (la Festa Major di Gràcia ad agosto è una delle più belle d'Europa) e un orgoglio di quartiere quasi sovversivo.</p>
+        <p>Il vermouth (vermut) qui non è un aperitivo — è un rito sociale. Si beve la domenica mattina o il sabato pomeriggio, con olive e patatine, seduti fuori. Non si ordina da bere e basta: si ordina il vermut e si aspetta che il barista porti qualcosa da mangiare. È incluso.</p>
+      </div>
+    </div></div>
+
+    <div class="card"><div class="cnum red">4</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🥘 Cena</div><div class="cname">El Born o Eixample</div></div><span class="ctime">21:00</span></div>
+      <p class="cdesc">Tornate verso il centro per cena. El Born è a 20 minuti in metro e ha una delle scene gastronomiche più vivaci della città.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>El Born era il quartiere degli artigiani medievali — ogni via aveva la sua corporazione (argentieri, calzolai, tintori). Il nome deriva dal campo dove si tenevano tornei e giostre: <em>lo Born</em>. Oggi il Mercat del Born, restaurato nel 2013, ha rivelato sotto i pavimenti le rovine dell'antico quartiere distrutto nel 1714 da Filippo V — visitabile gratuitamente.</p>
+        <p>La cucina catalana non è cucina spagnola: è una tradizione a sé, con influenze francesi, italiane e arabe. Il <em>pa amb tomàquet</em> (pane sfregato con pomodoro, sale e olio) è l'emblema — semplice e perfetto. Se non ve lo propongono automaticamente, chiedetelo.</p>
+      </div>
+    </div></div>
+  </div>
+  <div id="ps1"></div>
+</section>
+<section class="sec" id="d2">
+  <div class="dh"><div><div class="dlabel">Giorno 3 · Sabato 13 Giugno</div><h2 class="dtitle">Giornata a scelta — Voi decidete</h2><p class="dsub">Tre opzioni: spiaggia, città, o gita fuori porta</p></div><span class="badge">☀️ Giornata libera</span></div>
+  <div class="mapwrap"><div class="map-outer" id="mo2"><div class="leaflet-map" id="lmap2"></div></div>
+  <div class="map-actions">
+    <button class="map-btn" style="background:#0070c0;" onclick="openMapsFromHereTo('Barceloneta+Beach+Barcelona')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>A · Barceloneta</button>
+    <button class="map-btn" style="background:var(--rosso);" onclick="openMapsFromHereTo('Camp+Nou+Barcelona')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>B · Barcellona</button>
+    <button class="map-btn" style="background:var(--verde);" onclick="openMapsFromHereTo('Montserrat+Abbey+Spain')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>C · Montserrat</button>
+  </div></div>
+
+  <div class="options-grid">
+    <div class="opt-card"><div class="opt-inner">
+      <div class="opt-emoji">🏖</div><div class="opt-tag">Opzione A</div><div class="opt-title">Barceloneta &amp; Mare</div>
+      <p class="opt-desc">Giornata in spiaggia sul Mediterraneo. Metro L4 fino a Barceloneta, poi sdraiati sulla sabbia. Pranzo in uno dei chiringuito sul lungomare, aperitivo al tramonto.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)" style="margin-top:.4rem"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Barceloneta non è una spiaggia antica — fu costruita nel Settecento per ospitare i pescatori cacciati dal Barrio de la Ribera, demolito da Filippo V per costruire la Cittadella militare. Le strade sono così strette perché i progettisti militari le disegnarono deliberatamente così, per impedire le rivolte. Ogni isolato ha un unico palazzo lungo e stretto.</p>
+        <p>Il pesce più tipico qui è la <em>bombeta</em>: una polpetta fritta inventata proprio a Barceloneta. La ricetta originale è al Bar La Cova Fumada, aperto dal 1944 — niente menu, niente insegna, solo ciò che hanno cucinato quel giorno.</p>
+      </div>
+    </div></div>
+    <div class="opt-card"><div class="opt-inner">
+      <div class="opt-emoji">🏙</div><div class="opt-tag">Opzione B</div><div class="opt-title">A spasso per Barcellona</div>
+      <p class="opt-desc">Camp Nou, La Pedrera, Barrio Gótico, La Boqueria. Una giornata tra i grandi classici della città.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)" style="margin-top:.4rem"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Il Camp Nou fu costruito nel 1957 ed è il secondo stadio più grande del mondo. Ma la storia vera del Barça è politica: durante il franchismo, il club era l'unico luogo dove si poteva parlare catalano e sventolare la bandiera catalana senza essere arrestati. <em>"Més que un club"</em> (più che un club) non è uno slogan — è storia vera.</p>
+        <p>La Pedrera (Casa Milà, 1912) fu l'ultimo edificio civile di Gaudí. I vicini la soprannominarono <em>"la pedrera"</em> (la cava di pietra) per deriderla, e il nome rimase. Il tetto con i guerrieri-camino fu ispirazione diretta per George Lucas nel design degli stormtrooper di Star Wars.</p>
+      </div>
+    </div></div>
+    <div class="opt-card"><div class="opt-inner">
+      <div class="opt-emoji">⛰️</div><div class="opt-tag">Opzione C</div><div class="opt-title">Gita a Montserrat</div>
+      <p class="opt-desc">A 1h da Barcellona: rocce verticali che sembrano sculture, monastero benedettino e vista infinita sui Pirenei e sul Mediterraneo.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)" style="margin-top:.4rem"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Le rocce di Montserrat sono antiche 50 milioni di anni — erano il fondo di un lago preistorico. L'erosione millennaria ha creato quelle forme verticali impossibili che sembrano sculture. I monaci benedettini ci abitano ininterrottamente dal 880 d.C., sopravvivendo a invasioni napoleoniche, guerre civili e dittature.</p>
+        <p>La Madonna Nera (<em>La Moreneta</em>) è la patrona della Catalogna dal 1881. È nera perché secoli di candele e incenso hanno ossidato il legno originale. Secondo la leggenda fu scolpita da San Luca e portata a Barcellona da San Pietro in persona — la storia vera è che risale probabilmente al XII secolo.</p>
+        <p>Richard Wagner si ispirò a Montserrat per scrivere il <em>Parsifal</em>. Il Santo Graal della leggenda arturiana, secondo alcune tradizioni medievali, sarebbe custodito proprio qui — motivo per cui il monastero fu meta di pellegrinaggi per secoli.</p>
+      </div>
+    </div></div>
+  </div>
+  <div id="ps2"></div>
+</section>
+<section class="sec" id="d3">
+  <div class="dh"><div><div class="dlabel">Giorno 4 · Domenica 14 Giugno · Volo 13:00</div><h2 class="dtitle">Colazione &amp; Partenza</h2><p class="dsub">Ultima mattina a Barcellona — partire entro le 10:00</p></div><span class="badge">✈️ Part. 13:00</span></div>
+  <div class="mapwrap"><div class="map-outer" id="mo3"><div class="leaflet-map" id="lmap3"></div></div>
+  <div class="map-actions">
+    <button class="map-btn" onclick="openMapsFromHereTo('Aeropuerto+El+Prat+Barcelona')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Vai all'aeroporto</button>
+  </div></div>
+  <div class="stops">
+    <div class="card"><div class="cnum gold">☕</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🥐 Mattina · Ultimo giorno</div><div class="cname">Colazione nel quartiere</div></div><span class="ctime gold">08:00–09:00</span></div>
+      <p class="cdesc">Ultima colazione barcellonesa — <em>café con leche</em> e croissant in uno dei bar dell'Eixample. Veloci ma gustose.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>I barcellonesi fanno colazione due volte: una leggera al mattino presto (café e biscotto) e una vera a metà mattina, verso le 10:30, con <em>pa amb tomàquet</em> e jamón o un bocadillo. Non troverete mai pancakes o colazioni all'americana — e per fortuna.</p>
+        <p>L'<em>ensaïmada</em> è il dolce da assaggiare: una pasta sfoglia a spirale morbidissima, originaria di Maiorca ma adorata in tutta la Catalogna. Nelle pasticcerie storiche la fanno ancora a mano ogni mattina.</p>
+      </div>
+    </div></div>
+
+    <div class="card"><div class="cnum">🏠</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🔑 Check-out</div><div class="cname">Casp 74 Apartments</div></div><span class="ctime">Entro le 09:30</span></div>
+      <p class="cdesc">Lasciate l'appartamento entro le 09:30, bagagli pronti. Se volete potete lasciare le valigie in reception e fare un ultimo giro — ma occhio che alle 10:00 si parte per l'aeroporto.</p>
+    </div></div>
+
+    <div class="card"><div class="cnum red">✈</div><div class="cbody">
+      <div class="ctop"><div><div class="ctag">🛫 Partenza · Volo 13:00</div><div class="cname">Casp 74 → El Prat T1</div></div><span class="ctime">⚠️ Partire entro le 10:00</span></div>
+      <p class="cdesc">Per il volo delle 13:00 partite dall'appartamento <strong>entro le 10:00</strong> — così siete in aeroporto con due ore di anticipo. Il check-in chiude 45 minuti prima del volo.</p>
+      <button class="card-expand-btn" onclick="toggleCard(this)"><span>Leggi di più</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="card-details">
+        <p>Barcellona fu fondata dai Romani nel 15 a.C. con il nome di <em>Barcino</em> — i resti del foro romano sono ancora visitabili sotto il Barrio Gótico. Il nome ufficiale della città è ancora oggi <em>Barcelona</em> in catalano, non in spagnolo — e i barcellonesi tengono molto a questa distinzione.</p>
+        <p>Una curiosità per il viaggio di ritorno: l'aeroporto del Prat è intitolato a nessuno — uno dei pochi aeroporti europei senza un nome celebre. Ogni proposta (da Gaudí a Dalí) ha sempre scatenato polemiche politiche irrisolvibili tra catalani e spagnoli. Così è rimasto semplicemente "El Prat".</p>
+      </div>
+    </div></div>
+  </div>
+  <div id="ps3"></div>
+</section>
+<section class="sec active" id="d4">
+  <div class="dh"><div><div class="dlabel">Info pratiche</div><h2 class="dtitle">Tutto quello che serve 📌</h2><p class="dsub">Appartamento · Supermercati · Farmacie · Vino</p></div></div>
+
+  <!-- Mappa appartamento -->
+  <div class="mapwrap" style="margin-bottom:1rem;">
+    <div class="map-outer" id="mo-apt" style="height:240px;"><div class="leaflet-map" id="lmap-apt" style="height:100%;"></div></div>
+    <div class="map-actions">
+      <button class="map-btn" onclick="openMapsFromHereTo('Casp+74+Barcelona+Eixample')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Vai all'appartamento
+      </button>
+    </div>
+  </div>
+
+  <div class="iw" style="padding-top:0;"><div class="ig">
+
+    <!-- Appartamento -->
+    <div class="ic" style="border-color:var(--oro);border-width:2px;">
+      <div class="ii">🏠</div><div class="it">Appartamento</div>
+      <div class="id">
+        <strong style="font-size:.9rem;color:var(--blu);">Casp 74 Apartments</strong><br>
+        Casp, 74 — Eixample, 08010 Barcellona<br><br>
+        <strong>Check-in:</strong> Giovedì 11 Giugno · 16:00<br>
+        <strong>Check-out:</strong> Domenica 14 Giugno · 09:30<br><br>
+        📍 <em>A 10 min a piedi da Casa Batlló e Passeig de Gràcia</em>
+      </div>
+    </div>
+
+    <!-- Supermercati -->
+    <div class="ic">
+      <div class="ii">🛒</div><div class="it">Supermercati vicini</div>
+      <div class="id" style="display:flex;flex-direction:column;gap:.6rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+          <div><strong>Mercadona</strong><br><span style="font-size:.73rem;color:var(--grigio);">Rda. de Sant Pere 31 · ~3 min a piedi</span></div>
+          <button class="map-btn" style="font-size:.65rem;padding:.3rem .7rem;" onclick="openMapsFromHereTo('Mercadona+Ronda+Sant+Pere+31+Barcelona')">↗ Maps</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+          <div><strong>Caprabo</strong><br><span style="font-size:.73rem;color:var(--grigio);">C/ Casp 44 · ~30 m · praticamente sotto casa</span></div>
+          <button class="map-btn" style="font-size:.65rem;padding:.3rem .7rem;" onclick="openMapsFromHereTo('Caprabo+Carrer+de+Casp+44+Barcelona')">↗ Maps</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Farmacie -->
+    <div class="ic">
+      <div class="ii">💊</div><div class="it">Farmacie</div>
+      <div class="id" style="display:flex;flex-direction:column;gap:.6rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+          <div><strong>Farmàcia Casp</strong><br><span style="font-size:.73rem;color:var(--grigio);">C/ Casp 67 · ~1 min a piedi</span></div>
+          <button class="map-btn" style="font-size:.65rem;padding:.3rem .7rem;" onclick="openMapsFromHereTo('Farmacia+Casp+67+Barcelona')">↗ Maps</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+          <div><strong>Farmàcia Alvarez 24h</strong><br><span style="font-size:.73rem;color:var(--grigio);">La Rambla 98 · <strong>+34 933 024 415</strong></span></div>
+          <button class="map-btn" style="font-size:.65rem;padding:.3rem .7rem;" onclick="openMapsFromHereTo('Farmacia+Alvarez+La+Rambla+98+Barcelona')">↗ Maps</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--grigio);margin-top:.2rem;"><em>🟢 Croce verde lampeggiante = aperta</em></div>
+      </div>
+    </div>
+
+    <!-- Vino e aperitivo -->
+    <div class="ic">
+      <div class="ii">🍷</div><div class="it">Vino &amp; aperitivo vicino casa</div>
+      <div class="id" style="display:flex;flex-direction:column;gap:.6rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+          <div><strong>Morro Fi</strong><br><span style="font-size:.73rem;color:var(--grigio);">C/ Consell de Cent 171 · vermouth e tapas</span></div>
+          <button class="map-btn" style="font-size:.65rem;padding:.3rem .7rem;" onclick="openMapsFromHereTo('Morro+Fi+Barcelona')">↗ Maps</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+          <div><strong>El Nacional</strong><br><span style="font-size:.73rem;color:var(--grigio);">Pg. de Gràcia 24 · mercato gastronomico</span></div>
+          <button class="map-btn" style="font-size:.65rem;padding:.3rem .7rem;" onclick="openMapsFromHereTo('El+Nacional+Barcelona')">↗ Maps</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+          <div><strong>Bar Calders</strong><br><span style="font-size:.73rem;color:var(--grigio);">C/ Parlament 25 · storico bar Sant Antoni</span></div>
+          <button class="map-btn" style="font-size:.65rem;padding:.3rem .7rem;" onclick="openMapsFromHereTo('Bar+Calders+Barcelona')">↗ Maps</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+          <div><strong>Supercell</strong><br><span style="font-size:.73rem;color:var(--grigio);">C/ Enric Granados · vini naturali</span></div>
+          <button class="map-btn" style="font-size:.65rem;padding:.3rem .7rem;" onclick="openMapsFromHereTo('Supercell+Enric+Granados+Barcelona')">↗ Maps</button>
+        </div>
+      </div>
+    </div>
+
+  </div></div>
+</section>
+<div class="modal-bg" id="cam-modal"><div class="modal-box"><button class="modal-close" onclick="closeCamera()">✕</button><video id="cam-video" autoplay playsinline muted></video><canvas id="cam-canvas" style="display:none"></canvas><div class="cam-controls"><button class="pbtn pbtn-red" onclick="snapPhoto()">📸 Scatta</button><button class="pbtn" id="rec-btn" style="background:#6c3fc5;color:white;" onclick="toggleRecord()">⏺ Video</button><button class="pbtn pbtn-blu" onclick="switchCam()">🔄 Inverti</button></div></div></div>
+<div class="lightbox" id="lightbox" onclick="lbBgClick(event)"><button class="lb-close" onclick="closeLb()">✕</button><img id="lb-img" src="" alt=""><video id="lb-vid" controls></video><div class="lb-meta" id="lb-meta"></div><div class="lb-nav"><button onclick="lbStep(-1)">← Prec</button><button class="lb-dl" onclick="lbDl()">⬇ Scarica</button><button onclick="lbStep(1)">Succ →</button></div></div>
+<div class="dl-toast" id="dl-toast">📥 Salvata in Download</div>
+
+<!-- VIDEO GENERATOR MODAL -->
+<div class="modal-bg" id="vid-modal" style="z-index:1100;">
+  <div class="modal-box" style="max-width:520px;background:#0d1117;border-radius:24px;overflow:hidden;">
+    <button class="modal-close" onclick="closeVidModal()" style="color:white;z-index:10;">✕</button>
+    <div style="padding:2rem 1.8rem 1.5rem;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.4rem;color:white;font-weight:700;margin-bottom:.3rem;">🎬 Genera Video</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:1.5rem;">Slideshow di tutte le foto del viaggio</div>
+      <div id="vid-status" style="font-size:.8rem;color:var(--oro);min-height:1.4rem;margin-bottom:1rem;text-align:center;"></div>
+      <canvas id="vid-canvas" style="display:none;"></canvas>
+      <!-- Progress bar -->
+      <div id="vid-progress-wrap" style="display:none;background:rgba(255,255,255,.08);border-radius:100px;height:6px;margin-bottom:1.2rem;overflow:hidden;">
+        <div id="vid-progress" style="height:100%;background:var(--oro);border-radius:100px;width:0%;transition:width .3s;"></div>
+      </div>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap;">
+        <button id="vid-gen-btn" class="map-btn" style="flex:1;justify-content:center;padding:.7rem;font-size:.82rem;" onclick="generateVideo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Genera video
+        </button>
+        <button id="vid-dl-btn" class="map-btn" style="flex:1;justify-content:center;padding:.7rem;font-size:.82rem;display:none;background:var(--verde);" onclick="downloadVideo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Scarica .webm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem;">
+    <button class="map-btn" onclick="openVidModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Genera video
+    </button>
+    <button class="map-btn" style="background:var(--oro);color:var(--blu);" onclick="exportAllPoster()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Esporta tutti i poster
+    </button>
+  </div>
+  Barcellona · 11–14 Giugno 2026 &nbsp;·&nbsp; Buon viaggio! 🥂
+</footer>
+<canvas id="poster-canvas" style="display:none;"></canvas>
+<script>
+/* ── CARD EXPAND ── */
+function toggleCard(btn) {
+  btn.classList.toggle('open');
+  var details = btn.parentElement.querySelector('.card-details');
+  details.classList.toggle('open');
+  btn.querySelector('span').textContent = details.classList.contains('open') ? 'Meno' : 'Leggi di più';
+}
+
+/* ── NAVIGAZIONE ── */
+// Ordine sezioni: [info=4, gio=0, ven=1, sab=2, dom=3]
+var SEC_ORDER = [4,0,1,2,3]; // tab index → section index
+var currentSec = 4;
+
+function go(i) {
+  currentSec = i;
+  document.querySelectorAll('.sec').forEach(function(s,j){s.classList.toggle('active',j===i);});
+  document.querySelectorAll('.tab').forEach(function(t,j){
+    t.classList.toggle('active', SEC_ORDER[j]===i);
+  });
+  // Scroll to top
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(i<4){
+    setTimeout(function(){
+      initMap(i);
+      invalidateMap(i);
+      renderCollage(i);
+    },80);
+  } else {
+    setTimeout(function(){
+      initAptMap();
+      invalidateAptMap();
+      [0,1,2,3].forEach(function(d){renderCollage(d);});
+    },80);
+  }
+}
+
+/* ── AUTO-TAB per data corrente ── */
+function getDefaultTab(){
+  var now = new Date();
+  // Date del viaggio
+  var days = [
+    new Date(2026,5,11), // Gio 11 Giugno (mese 0-indexed)
+    new Date(2026,5,12), // Ven 12
+    new Date(2026,5,13), // Sab 13
+    new Date(2026,5,14), // Dom 14
+  ];
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  for(var d=0;d<days.length;d++){
+    if(today.getTime()===days[d].getTime()) return d;
+  }
+  // Fuori dal viaggio → info utili
+  return 4;
+}
+
+/* ── SWIPE tra sezioni ── */
+(function(){
+  var touchStartX=0, touchStartY=0, swiping=false;
+  // Ordine di navigazione con swipe: info, gio, ven, sab, dom
+  var swipeOrder = [4,0,1,2,3];
+
+  document.addEventListener('touchstart',function(e){
+    if(e.target.closest('.leaflet-container,.modal-bg,.lightbox,.scrap-wrap')) return;
+    touchStartX=e.touches[0].clientX;
+    touchStartY=e.touches[0].clientY;
+    swiping=true;
+  },{passive:true});
+
+  document.addEventListener('touchend',function(e){
+    if(!swiping) return; swiping=false;
+    var dx=e.changedTouches[0].clientX-touchStartX;
+    var dy=e.changedTouches[0].clientY-touchStartY;
+    // Solo swipe orizzontale dominante
+    if(Math.abs(dx)<50||Math.abs(dy)>Math.abs(dx)*0.8) return;
+    var idx=swipeOrder.indexOf(currentSec);
+    if(dx<0 && idx<swipeOrder.length-1) go(swipeOrder[idx+1]);
+    else if(dx>0 && idx>0) go(swipeOrder[idx-1]);
+  },{passive:true});
+})();
+
+/* ── DRAG & DROP POLAROID ── */
+/* ── DRAG & DROP TOUCH-NATIVE ── */
+var dragState = {active:false, day:null, fromIdx:null, ghost:null, srcEl:null, photos:null};
+
+function makeDraggable(el, day, idx, photos){
+  // Long press per attivare il drag (500ms)
+  var longPressTimer=null, moved=false;
+
+  function startDrag(clientX, clientY){
+    dragState.active=true;
+    dragState.day=day; dragState.fromIdx=idx;
+    dragState.srcEl=el; dragState.photos=photos;
+
+    // Crea ghost clone
+    var rect=el.getBoundingClientRect();
+    var ghost=el.cloneNode(true);
+    ghost.className=ghost.className+' scrap-drag-ghost';
+    ghost.style.width=rect.width+'px';
+    ghost.style.height=rect.height+'px';
+    ghost.style.left=(clientX-rect.width/2)+'px';
+    ghost.style.top=(clientY-rect.height/2)+'px';
+    // Rimuovi bottoni dal ghost
+    ghost.querySelectorAll('.scrap-del,.scrap-tape,.scrap-tape-r').forEach(function(x){x.remove();});
+    document.body.appendChild(ghost);
+    dragState.ghost=ghost;
+    el.classList.add('scrap-dragging');
+    showToast('↕ Rilascia sulla foto target');
+  }
+
+  function moveDrag(clientX, clientY){
+    if(!dragState.active||dragState.day!==day) return;
+    var g=dragState.ghost;
+    if(!g) return;
+    g.style.left=(clientX-parseInt(g.style.width)/2)+'px';
+    g.style.top=(clientY-parseInt(g.style.height)/2)+'px';
+    // Trova elemento sotto il cursore
+    g.style.display='none';
+    var under=document.elementFromPoint(clientX,clientY);
+    g.style.display='';
+    document.querySelectorAll('.scrap-drag-over').forEach(function(x){x.classList.remove('scrap-drag-over');});
+    if(under){
+      var target=under.closest('.scrap-big,.scrap-pol,.scrap-full');
+      if(target&&target!==el) target.classList.add('scrap-drag-over');
+    }
+  }
+
+  function endDrag(clientX, clientY){
+    if(!dragState.active||dragState.day!==day) return;
+    // Cleanup ghost
+    if(dragState.ghost){dragState.ghost.remove(); dragState.ghost=null;}
+    el.classList.remove('scrap-dragging');
+    document.querySelectorAll('.scrap-drag-over').forEach(function(x){x.classList.remove('scrap-drag-over');});
+    // Trova target
+    var under=document.elementFromPoint(clientX,clientY);
+    if(under){
+      var target=under.closest('.scrap-big,.scrap-pol,.scrap-full');
+      if(target&&target!==el){
+        // Trova indice target
+        var toIdx=parseInt(target.dataset.dragIdx);
+        if(!isNaN(toIdx)&&toIdx!==idx){
+          var from=idx, to=toIdx;
+          var p=dragState.photos;
+          var tmp=p[from]; p[from]=p[to]; p[to]=tmp;
+          swapPhotoOrder(day, p[from], p[to]);
+          renderCollageFromPhotos(day, p);
+        }
+      }
+    }
+    dragState.active=false; dragState.day=null;
+  }
+
+  // Salva idx come data attribute per trovarlo al drop
+  el.dataset.dragIdx=idx;
+
+  // TOUCH
+  el.addEventListener('touchstart',function(e){
+    moved=false;
+    longPressTimer=setTimeout(function(){
+      if(!moved) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    },450);
+  },{passive:true});
+
+  el.addEventListener('touchmove',function(e){
+    moved=true;
+    if(!dragState.active||dragState.day!==day) return;
+    e.preventDefault();
+    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+  },{passive:false});
+
+  el.addEventListener('touchend',function(e){
+    clearTimeout(longPressTimer);
+    if(!dragState.active||dragState.day!==day) return;
+    var t=e.changedTouches[0];
+    endDrag(t.clientX, t.clientY);
+  },{passive:true});
+
+  el.addEventListener('touchcancel',function(){
+    clearTimeout(longPressTimer);
+    if(dragState.ghost){dragState.ghost.remove(); dragState.ghost=null;}
+    el.classList.remove('scrap-dragging');
+    dragState.active=false;
+  },{passive:true});
+
+  // MOUSE (desktop)
+  el.addEventListener('mousedown',function(e){
+    if(e.button!==0) return;
+    longPressTimer=setTimeout(function(){startDrag(e.clientX,e.clientY);},300);
+  });
+  document.addEventListener('mousemove',function(e){
+    if(longPressTimer&&!dragState.active){clearTimeout(longPressTimer); longPressTimer=null;}
+    moveDrag(e.clientX,e.clientY);
+  });
+  document.addEventListener('mouseup',function(e){
+    clearTimeout(longPressTimer);
+    endDrag(e.clientX,e.clientY);
+  });
+}
+
+async function swapPhotoOrder(day, photoA, photoB){
+  try{
+    // Scambia i timestamp per cambiare ordine
+    var tsA=photoA.ts, tsB=photoB.ts;
+    await fetch(SB_URL+'/rest/v1/photos?id=eq.'+photoA.id,{
+      method:'PATCH', headers:sbHeaders({'Content-Type':'application/json'}),
+      body:JSON.stringify({ts:tsB})
+    });
+    await fetch(SB_URL+'/rest/v1/photos?id=eq.'+photoB.id,{
+      method:'PATCH', headers:sbHeaders({'Content-Type':'application/json'}),
+      body:JSON.stringify({ts:tsA})
+    });
+  }catch(e){ console.warn('Swap order failed',e); }
+}
+
+// Versione di renderCollage che usa foto già caricate (per drag immediato)
+function renderCollageFromPhotos(day, photos){
+  var wrap = document.getElementById('ci'+day);
+  var countEl = document.getElementById('pc'+day);
+  if(!wrap) return;
+  countEl.textContent = photos.length+(photos.length===1?' elemento':' elementi');
+  if(!photos.length){
+    wrap.innerHTML='<div class="scrap-wrap"><div class="scrap-empty"><span>📷</span>Nessuna foto ancora — sii il primo!</div></div>';
+    return;
+  }
+  buildScrapbook(wrap, day, photos);
+}
+
+function buildScrapbook(wrap, day, photos){
+  var container = document.createElement('div');
+  container.className='scrap-wrap';
+  var tapes=['scrap-tape','scrap-tape-r',null,'scrap-tape',null,null,'scrap-tape-r',null];
+
+  function makeMedia(p, cls){
+    var isVid=p.type==='video';
+    var style=cls==='scrap-pol'?'display:block;width:100%;aspect-ratio:1;object-fit:cover;':'display:block;width:100%;height:auto;';
+    return (isVid?'<video src="'+p.src+'" muted playsinline style="'+style+'"></video><div class="scrap-vid">🎬</div>':'<img src="'+p.src+'" alt="" loading="lazy" style="'+style+'">');
+  }
+
+  function makeEl(p, i, cls, heightStyle){
+    var key=p.id?String(p.id):(p._k&&p._k!=='undefined'?p._k:String(p.ts));
+    var tape=tapes[i%tapes.length];
+    var showCap=p.name&&!/^\d{10,}/.test(p.name);
+    var capCls=cls==='scrap-pol'?'scrap-pol-cap':(cls==='scrap-big'?'scrap-big-cap':'scrap-full-cap');
+    var el=document.createElement('div');
+    el.className=cls;
+    if(heightStyle) el.style.cssText=heightStyle;
+    el.innerHTML=(tape?'<div class="'+tape+'"></div>':'')+makeMedia(p,cls)+(showCap?'<div class="'+capCls+'">'+p.name+'</div>':'')+'<button class="scrap-del" data-day="'+day+'" data-key="'+key+'">✕</button>';
+    el.addEventListener('click',function(){openLb(day,i,photos);});
+    el.querySelector('.scrap-del').addEventListener('click',function(e){e.stopPropagation();delItem(parseInt(this.dataset.day),this.dataset.key);});
+    makeDraggable(el, day, i, photos);
+    return el;
+  }
+
+  var i=0, rowCount=0;
+  while(i<photos.length){
+    var remaining=photos.length-i;
+    if(remaining===1){
+      container.appendChild(makeEl(photos[i],i,'scrap-full'));
+      i++;
+    } else if(remaining===2){
+      var row=document.createElement('div'); row.className='scrap-row';
+      row.appendChild(makeEl(photos[i],i,'scrap-big',''));
+      row.appendChild(makeEl(photos[i+1],i+1,'scrap-big',''));
+      container.appendChild(row); i+=2;
+    } else {
+      var row=document.createElement('div'); row.className='scrap-row';
+      var bigH=rowCount%3===0?200:(rowCount%3===1?175:190);
+      var big=makeEl(photos[i],i,'scrap-big','');
+      var group=document.createElement('div'); group.className='scrap-group';
+      group.appendChild(makeEl(photos[i+1],i+1,'scrap-pol'));
+      group.appendChild(makeEl(photos[i+2],i+2,'scrap-pol'));
+      if(rowCount%2===0){row.appendChild(big);row.appendChild(group);}
+      else{row.appendChild(group);row.appendChild(big);}
+      container.appendChild(row); i+=3; rowCount++;
+    }
+  }
+  wrap.innerHTML=''; wrap.appendChild(container);
+}
+
+/* ── LEAFLET MAP ENGINE ── */
+var DAY_STOPS=[
+  {lat:41.391,lng:2.162,zoom:13,stops:[
+    {lat:41.2974,lng:2.0833,label:'✈',color:'#1A2E4A',name:'El Prat T1',sub:'Arrivo · 16:00',gmaps:'Aeropuerto+El+Prat+Barcelona'},
+    {lat:41.3917,lng:2.1679,label:'🏠',color:'#C8A96E',name:'Casp 74',sub:'Appartamento',gmaps:'Casp+74+Barcelona'},
+    {lat:41.3917,lng:2.1649,label:'1',color:'#D94F3D',name:'Casa Batlló',sub:'18:30–20:00',gmaps:'Casa+Batllo+Barcelona'}
+  ]},
+  {lat:41.408,lng:2.163,zoom:13,stops:[
+    {lat:41.4036,lng:2.1744,label:'1',color:'#1A2E4A',name:'Sagrada Família',sub:'09:00–12:00',gmaps:'Sagrada+Familia+Barcelona'},
+    {lat:41.4145,lng:2.1527,label:'2',color:'#3a7d5e',name:'Park Güell',sub:'13:30–16:00',gmaps:'Park+Guell+Barcelona'},
+    {lat:41.4020,lng:2.1570,label:'3',color:'#C8A96E',name:'Gràcia',sub:'Aperitivo · 17:00',gmaps:'Placa+del+Sol+Gracia+Barcelona'}
+  ]},
+  {lat:41.39,lng:2.05,zoom:10,stops:[
+    {lat:41.3784,lng:2.1925,label:'A',color:'#0070c0',name:'Barceloneta',sub:'Spiaggia',gmaps:'Barceloneta+Beach+Barcelona'},
+    {lat:41.3806,lng:2.1228,label:'B',color:'#D94F3D',name:'Camp Nou / Pedrera',sub:'Barcellona città',gmaps:'Camp+Nou+Barcelona'},
+    {lat:41.5933,lng:1.8376,label:'C',color:'#3a7d5e',name:'Montserrat',sub:'Gita fuori porta',gmaps:'Montserrat+Abbey+Spain'}
+  ]},
+  {lat:41.37,lng:2.13,zoom:12,stops:[
+    {lat:41.3917,lng:2.1679,label:'🏠',color:'#C8A96E',name:'Casp 74',sub:'Check-out · 09:30',gmaps:'Casp+74+Barcelona'},
+    {lat:41.2974,lng:2.0833,label:'✈',color:'#D94F3D',name:'El Prat T1',sub:'Partenza · 13:00',gmaps:'Aeropuerto+El+Prat+Barcelona'}
+  ]}
+];
+
+var LMAPS = {}; // Leaflet map instances
+
+function makePinIcon(label, color) {
+  var textColor = color === '#C8A96E' ? '#1A2E4A' : 'white';
+  var isEmoji = /\p{Emoji_Presentation}/u.test(label);
+  var fontSize = isEmoji ? '16px' : (label.length > 1 ? '10px' : '14px');
+  var html = '<div style="width:36px;height:44px;display:flex;flex-direction:column;align-items:center;">'
+    + '<div style="width:36px;height:36px;border-radius:50%;background:' + color + ';border:2.5px solid white;'
+    + 'display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.4);'
+    + 'font-family:\'Playfair Display\',Georgia,serif;font-weight:700;font-size:' + fontSize + ';color:' + textColor + ';">'
+    + label + '</div>'
+    + '<div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;'
+    + 'border-top:10px solid ' + color + ';margin-top:-1px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));"></div>'
+    + '</div>';
+  return L.divIcon({html: html, className: '', iconSize: [36, 46], iconAnchor: [18, 46], popupAnchor: [0, -48]});
+}
+
+function initMap(di) {
+  if (LMAPS[di]) return;
+  var el = document.getElementById('lmap' + di);
+  if (!el) return;
+  var d = DAY_STOPS[di];
+  var map = L.map('lmap' + di, {zoomControl: true, scrollWheelZoom: false}).setView([d.lat, d.lng], d.zoom);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Linea percorso tratteggiata oro
+  var latlngs = d.stops.map(function(s){ return [s.lat, s.lng]; });
+  L.polyline(latlngs, {
+    color: '#C8A96E', weight: 3, opacity: 0.9, dashArray: '8, 10'
+  }).addTo(map);
+
+  // Marker con popup
+  d.stops.forEach(function(st) {
+    var icon = makePinIcon(st.label, st.color);
+    var marker = L.marker([st.lat, st.lng], {icon: icon}).addTo(map);
+    var popupHtml = '<div class="pop-title">' + st.name + '</div>'
+      + '<div class="pop-sub">' + st.sub + '</div>'
+      + '<a class="pop-link" href="https://www.google.com/maps/search/' + st.gmaps + '" target="_blank">↗ Apri in Google Maps</a>';
+    marker.bindPopup(popupHtml, {maxWidth: 220, minWidth: 180});
+  });
+
+  LMAPS[di] = map;
+}
+
+function initAptMap() {
+  if (LMAPS['apt']) return;
+  var el = document.getElementById('lmap-apt');
+  if (!el) return;
+  var map = L.map('lmap-apt', {zoomControl: true, scrollWheelZoom: false}).setView([41.3917, 2.1679], 16);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(map);
+  var icon = makePinIcon('🏠', '#C8A96E');
+  L.marker([41.3917, 2.1679], {icon: icon}).addTo(map)
+    .bindPopup('<div class="pop-title">Casp 74 Apartments</div><div class="pop-sub">Casp, 74 · Eixample</div><a class="pop-link" href="https://www.google.com/maps/search/Casp+74+Barcelona" target="_blank">↗ Apri in Google Maps</a>', {maxWidth: 220});
+  LMAPS['apt'] = map;
+}
+
+// Invalida dimensioni dopo apertura tab (Leaflet richiede invalidateSize)
+function invalidateMap(di) {
+  if (LMAPS[di]) setTimeout(function(){ LMAPS[di].invalidateSize(); }, 100);
+}
+function invalidateAptMap() {
+  if (LMAPS['apt']) setTimeout(function(){ LMAPS['apt'].invalidateSize(); }, 100);
+}
+
+
+
+/* ── SUPABASE CONFIG ── */
+var SB_URL  = 'https://xrovypovlfhugvhchaid.supabase.co';
+var SB_KEY  = 'sb_publishable_EJGZa06c4DOYJWPWU9WnDA_3fEtnB4s';
+var SB_BUCKET = 'photos';
+
+/* ── STORAGE ── */
+var DNAMES = ['giovedi','venerdi','sabato','domenica'];
+var MAX_IMG = 10*1024*1024, MAX_VID = 100*1024*1024;
+
+function sbHeaders(extra){
+  return Object.assign({'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY},extra||{});
+}
+
+// Resize immagine → Blob JPEG alta qualità (max 2400px, qualità 0.96)
+function resizeToBlob(file){
+  return new Promise(function(res,rej){
+    var reader=new FileReader();
+    reader.onerror=rej;
+    reader.onload=function(ev){
+      var img=new Image();
+      img.onerror=rej;
+      img.onload=function(){
+        var w=img.width,h=img.height,max=2400;
+        if(w>max||h>max){var r=Math.min(max/w,max/h);w=Math.round(w*r);h=Math.round(h*r);}
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        c.toBlob(function(b){res(b);},'image/jpeg',0.96);
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Genera nome file univoco con timestamp ms + random per evitare sovrascritture
+function uniqueFilename(originalName, day) {
+  var ext = originalName.split('.').pop().toLowerCase();
+  var ts = Date.now();
+  var rnd = Math.floor(Math.random()*900+100); // 3 cifre random
+  return 'Barcellona-' + DNAMES[day] + '-' + ts + '-' + rnd + '.' + ext;
+}
+
+// Upload file su Supabase Storage → restituisce URL pubblico
+async function sbUpload(path, blob, mime){
+  var r = await fetch(SB_URL+'/storage/v1/object/'+SB_BUCKET+'/'+path, {
+    method:'POST',
+    headers: sbHeaders({'Content-Type': mime, 'x-upsert':'true'}),
+    body: blob
+  });
+  if(!r.ok){
+    var err=await r.text();
+    throw new Error('Upload failed '+r.status+': '+err);
+  }
+  return SB_URL+'/storage/v1/object/public/'+SB_BUCKET+'/'+path;
+}
+
+// Carica lista foto dal DB
+async function dbLoad(day){
+  try{
+    var r=await fetch(SB_URL+'/rest/v1/photos?day=eq.'+day+'&order=ts.asc',{
+      headers:sbHeaders({'Accept':'application/json'})
+    });
+    if(!r.ok){console.warn('dbLoad failed',r.status);return lsLoad(day);}
+    var data=await r.json();
+    console.log('dbLoad day'+day+':',data.length,'rows, first id:',data[0]&&data[0].id);
+    return data.map(function(row){
+      return {id:row.id, name:row.name, src:row.url, type:row.type, ts:row.ts, _k:String(row.id)};
+    });
+  }catch(e){console.error('dbLoad error',e);return lsLoad(day);}
+}
+
+// Inserisce una riga nel DB
+async function dbAdd(day, photo){
+  try{
+    var ts = photo.ts || Date.now();
+    var isVid = photo.type === 'video';
+
+    var blob, mime, ext;
+
+    if(photo.blob){
+      // Da camera — webm
+      blob = photo.blob;
+      mime = 'video/webm'; ext = 'webm';
+
+    } else if(photo.file){
+      var f = photo.file;
+      mime = f.type || (isVid ? 'video/mp4' : 'image/jpeg');
+
+      // Mappa mime → estensione corretta
+      var mimeToExt = {
+        'video/mp4':'mp4','video/quicktime':'mov','video/mov':'mov',
+        'video/webm':'webm','video/ogg':'ogv','video/x-msvideo':'avi',
+        'video/x-matroska':'mkv','image/jpeg':'jpg','image/jpg':'jpg',
+        'image/png':'png','image/heic':'heic','image/heif':'heif',
+        'image/gif':'gif','image/webp':'webp'
+      };
+      ext = mimeToExt[mime] || f.name.split('.').pop().toLowerCase() || (isVid?'mp4':'jpg');
+
+      // I video vengono caricati così come sono (no resize)
+      // Le immagini vengono ridimensionate
+      blob = isVid ? f : await resizeToBlob(f);
+
+    } else if(photo.src && photo.src.startsWith('data:')){
+      blob = dataURLtoBlob(photo.src);
+      mime = isVid ? 'video/webm' : 'image/jpeg';
+      ext = isVid ? 'webm' : 'jpg';
+
+    } else {
+      throw new Error('Nessun dato valido');
+    }
+
+    var path = DNAMES[day] + '/' + ts + '.' + ext;
+    var url = await sbUpload(path, blob, mime);
+
+    var r = await fetch(SB_URL+'/rest/v1/photos', {
+      method: 'POST',
+      headers: sbHeaders({'Content-Type':'application/json','Prefer':'return=representation'}),
+      body: JSON.stringify({day:day, name:photo.name||'Barcellona', url:url, type:photo.type||'photo', ts:ts})
+    });
+    if(!r.ok){
+      var errText = await r.text();
+      throw new Error('DB insert failed: '+errText);
+    }
+  } catch(e){
+    console.error('dbAdd error', e);
+    // Fallback localStorage
+    var arr = lsLoad(day);
+    var fbEntry = Object.assign({}, photo, {_k: String(photo.ts || Date.now())});
+    if(photo.file && !photo.src){
+      try{
+        fbEntry.src = await new Promise(function(res,rej){
+          var r2=new FileReader(); r2.onerror=rej;
+          r2.onload=function(ev){res(ev.target.result);}; r2.readAsDataURL(photo.file);
+        });
+      }catch(e2){}
+    }
+    arr.push(fbEntry);
+    lsSave(day, arr);
+  }
+}
+
+// Elimina dal DB e dallo Storage
+async function dbDel(day, key){
+  try{
+    // key può essere numerico o stringa — normalizziamo
+    var numId = parseInt(key);
+    if(isNaN(numId)) throw new Error('ID non valido: '+key);
+
+    // Trova l'url prima di eliminare
+    var r=await fetch(SB_URL+'/rest/v1/photos?id=eq.'+numId,{
+      headers:sbHeaders({'Accept':'application/json'})
+    });
+    var rows=await r.json();
+    if(rows&&rows[0]&&rows[0].url){
+      var path=rows[0].url.split('/object/public/'+SB_BUCKET+'/')[1];
+      if(path){
+        await fetch(SB_URL+'/storage/v1/object/'+SB_BUCKET+'/'+encodeURI(path),{
+          method:'DELETE',headers:sbHeaders()
+        });
+      }
+    }
+    await fetch(SB_URL+'/rest/v1/photos?id=eq.'+numId,{
+      method:'DELETE',headers:sbHeaders()
+    });
+  }catch(e){
+    console.error('dbDel error',e);
+    lsSave(day,lsLoad(day).filter(function(p){return String(p._k)!==String(key);}));
+  }
+}
+
+// Polling real-time (Supabase Realtime richiederebbe websocket; usiamo polling ogni 8s)
+var pollingIntervals={};
+function startSSE(day){
+  if(pollingIntervals[day])return;
+  pollingIntervals[day]=setInterval(function(){renderCollage(day);},8000);
+}
+
+// localStorage fallback
+function lsLoad(day){try{return JSON.parse(localStorage.getItem('bcn_'+DNAMES[day])||'[]');}catch(e){return[];}}
+function lsSave(day,arr){try{localStorage.setItem('bcn_'+DNAMES[day],JSON.stringify(arr));}catch(e){}}
+
+/* ── COLLAGE ── */
+function srnd(seed){var x=Math.sin(seed+1)*10000;return x-Math.floor(x);}
+
+function showToast(msg){
+  var t=document.getElementById('dl-toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2800);
+}
+
+async function renderCollage(day){
+  var photos = await dbLoad(day);
+  var wrap = document.getElementById('ci'+day);
+  var countEl = document.getElementById('pc'+day);
+  if(!wrap) return;
+  countEl.textContent = photos.length+(photos.length===1?' elemento':' elementi');
+  if(photos.length===0){
+    wrap.innerHTML='<div class="scrap-wrap"><div class="scrap-empty"><span>📷</span>Nessuna foto ancora — sii il primo!</div></div>';
+    return;
+  }
+  buildScrapbook(wrap, day, photos);
+}
+
+/* ── UPLOAD ── */
+async function handleFiles(day,files){
+  if(!files||!files.length)return;
+  var status=document.getElementById('st'+day);
+  var valid=Array.from(files).filter(function(f){
+    if(f.type.startsWith('image/')&&f.size>MAX_IMG)return false;
+    if(f.type.startsWith('video/')&&f.size>MAX_VID)return false;
+    return f.type.startsWith('image/')||f.type.startsWith('video/');
+  });
+  var skipped=files.length-valid.length;
+  if(skipped>0){status.className='pstatus err';status.textContent='⚠️ '+skipped+' file troppo grandi saltati.';}
+  if(!valid.length)return;
+
+  status.textContent='⏳ Caricamento '+valid.length+' file...';status.className='pstatus';
+
+  // Upload tutti in parallelo — NO download automatico (i file vengono dalla galleria, ci sono già)
+  var results = await Promise.allSettled(valid.map(function(f){
+    var isVid = f.type.startsWith('video/');
+    return dbAdd(day, {
+      file: f,
+      name: f.name.replace(/\.[^.]+$/,''),
+      ts: Date.now() + Math.floor(Math.random()*100),
+      type: isVid ? 'video' : 'photo'
+    });
+  }));
+
+  var ok = results.filter(function(r){return r.status==='fulfilled';}).length;
+  var fail = results.length - ok;
+
+  await renderCollage(day);
+
+  if(fail>0){
+    status.textContent='⚠️ '+ok+' caricati, '+fail+' falliti.';status.className='pstatus err';
+  } else {
+    status.textContent='✅ '+ok+' elementi aggiunti!';status.className='pstatus ok';
+  }
+  setTimeout(function(){status.textContent='';status.className='pstatus';},3000);
+}
+
+async function delItem(day,key){
+  if(!confirm('Eliminare?'))return;
+  await dbDel(day,key);
+  await renderCollage(day);
+  closeLb();
+}
+
+async function downloadAll(day){
+  var photos=await dbLoad(day);
+  if(!photos.length){alert('Nessun elemento!');return;}
+  showToast('📥 Download di '+photos.length+' file...');
+  for(var i=0;i<photos.length;i++){
+    var p=photos[i];
+    var ext=p.type==='video'?'mp4':'jpg';
+    try{
+      var resp=await fetch(p.src);
+      var blob=await resp.blob();
+      var ct=blob.type||'';
+      if(ct.includes('mp4'))ext='mp4';
+      else if(ct.includes('webm'))ext='webm';
+      else if(ct.includes('mov'))ext='mov';
+      downloadBlobNow(blob,'Barcellona-'+DNAMES[day]+'-'+(i+1)+'.'+ext);
+    }catch(e){
+      console.warn('Download failed for photo',i,e);
+    }
+    await new Promise(function(r){setTimeout(r,700);});
+  }
+}
+function dzOver(e,d){e.preventDefault();document.getElementById('dz'+d).classList.add('over');}
+function dzLeave(d){document.getElementById('dz'+d).classList.remove('over');}
+function dzDrop(e,d){e.preventDefault();dzLeave(d);handleFiles(d,e.dataTransfer.files);}
+
+/* ── CAMERA ── */
+var camStream=null,camDay=0,camFacing='environment',mediaRec=null,recChunks=[];
+function openCamera(day){
+  camDay=day;
+  var isSecure=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
+  var hasAPI=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+  if(!hasAPI||!isSecure){showCamFallback(day,!isSecure?'La fotocamera live richiede HTTPS. Usa i pulsanti qui sotto per scattare con l\'app nativa.':'Il browser non supporta la fotocamera diretta.');return;}
+  document.getElementById('cam-modal').classList.add('open');
+  startCamStream();
+}
+function startCamStream(){
+  if(camStream)camStream.getTracks().forEach(function(t){t.stop();});
+  navigator.mediaDevices.getUserMedia({video:{facingMode:camFacing,width:{ideal:1280},height:{ideal:720}},audio:true})
+    .then(function(stream){camStream=stream;document.getElementById('cam-video').srcObject=stream;})
+    .catch(function(e){
+      var msg=e.name==='NotAllowedError'||e.name==='PermissionDeniedError'?'Permesso negato. Vai nelle impostazioni del browser e consenti la fotocamera per questo sito.':e.name==='NotFoundError'?'Nessuna fotocamera trovata.':e.name==='NotReadableError'?'Fotocamera in uso da un\'altra app.':'Errore: '+e.message;
+      closeCamera();showCamFallback(camDay,msg);
+    });
+}
+function showCamFallback(day,msg){
+  var d=document.createElement('div');d.className='cam-fallback';
+  d.innerHTML='<div class="cam-fallback-box"><div style="font-size:2.5rem;margin-bottom:.7rem">📷</div><h3 style="font-family:\'Playfair Display\',serif;margin-bottom:.7rem;color:#1A2E4A">Fotocamera</h3><p style="font-size:.82rem;color:#666;line-height:1.6;margin-bottom:1.2rem">'+msg+'</p><div style="display:flex;flex-direction:column;gap:.55rem"><label style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.55rem 1.2rem;background:#D94F3D;color:white;border-radius:100px;cursor:pointer;font-size:.8rem;font-weight:600">📸 Scatta foto<input type="file" accept="image/*" capture="environment" style="display:none" onchange="handleFiles('+day+',this.files);this.closest(\'.cam-fallback\').remove()"></label><label style="display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.55rem 1.2rem;background:#6c3fc5;color:white;border-radius:100px;cursor:pointer;font-size:.8rem;font-weight:600">🎬 Registra video<input type="file" accept="video/*" capture="environment" style="display:none" onchange="handleFiles('+day+',this.files);this.closest(\'.cam-fallback\').remove()"></label><button onclick="this.closest(\'.cam-fallback\').remove()" style="padding:.45rem 1rem;background:#f0ece6;border:none;border-radius:100px;cursor:pointer;font-size:.8rem;color:#666;margin-top:.2rem">Chiudi</button></div></div>';
+  d.addEventListener('click',function(e){if(e.target===d)d.remove();});document.body.appendChild(d);
+}
+function closeCamera(){
+  if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();
+  if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+  document.getElementById('cam-modal').classList.remove('open');
+  var btn=document.getElementById('rec-btn');btn.textContent='⏺ Video';btn.style.background='#6c3fc5';
+  mediaRec=null;recChunks=[];
+}
+function switchCam(){camFacing=camFacing==='environment'?'user':'environment';startCamStream();}
+
+function dataURLtoBlob(dataURL) {
+  var parts = dataURL.split(',');
+  var mime = parts[0].match(/:(.*?);/)[1];
+  var binary = atob(parts[1]);
+  var arr = new Uint8Array(binary.length);
+  for (var i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+  return new Blob([arr], {type: mime});
+}
+
+
+// Salva file — comportamento identico su iOS e Android
+function downloadBlobNow(blob, filename) {
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  showToast('📥 ' + filename);
+}
+
+
+function snapPhoto(){
+  var video=document.getElementById('cam-video'),canvas=document.getElementById('cam-canvas');
+  canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  var ts=Date.now();
+  var filename='Barcellona-'+DNAMES[camDay]+'-'+ts+'-'+Math.floor(Math.random()*900+100)+'.jpg';
+
+  // Download diretto via dataURL — funziona in tutti i contesti
+  var dataURL = canvas.toDataURL('image/jpeg', 0.96);
+  var a = document.createElement('a');
+  a.href = dataURL;
+  a.download = filename;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast('📥 Foto salvata!');
+
+  // Upload su Supabase in parallelo
+  canvas.toBlob(function(blob){
+    dbAdd(camDay,{blob:blob, name:filename.replace('.jpg',''), ts:ts, type:'photo'})
+      .then(function(){renderCollage(camDay);});
+  },'image/jpeg',0.96);
+}
+
+function toggleRecord(){
+  var btn=document.getElementById('rec-btn');
+  if(!mediaRec||mediaRec.state==='inactive'){
+    recChunks=[];
+    var camMimeList=['video/mp4;codecs=avc1','video/mp4','video/webm;codecs=vp9','video/webm'];
+    var camMime=camMimeList.find(function(m){return MediaRecorder.isTypeSupported(m);})||'video/webm';
+    var camExt=camMime.startsWith('video/mp4')?'mp4':'webm';
+    mediaRec=new MediaRecorder(camStream,{mimeType:camMime});
+    mediaRec.ondataavailable=function(e){if(e.data.size>0)recChunks.push(e.data);};
+    mediaRec.onstop=function(){
+      var blob=new Blob(recChunks,{type:camMime});
+      var ts=Date.now();
+      var filename='Barcellona-'+DNAMES[camDay]+'-'+ts+'-'+Math.floor(Math.random()*900+100)+'.'+camExt;
+      downloadBlobNow(blob, filename);
+      dbAdd(camDay,{blob:blob, name:filename.replace('.'+camExt,''), ts:ts, type:'video'})
+        .then(function(){renderCollage(camDay);});
+    };
+    mediaRec.start(); btn.innerHTML='⏹ Stop'; btn.style.background='#c0392b';
+  } else {
+    mediaRec.stop(); btn.innerHTML='⏺ Video'; btn.style.background='#6c3fc5';
+  }
+}
+
+/* ── LIGHTBOX ── */
+var lbPhotos=[],lbDay=0,lbIdx=0;
+function openLb(day,idx,photos){
+  lbDay=day;lbIdx=idx;lbPhotos=photos;var p=photos[idx];
+  var img=document.getElementById('lb-img'),vid=document.getElementById('lb-vid');
+  if(p.type==='video'){img.style.display='none';vid.style.display='block';vid.src=p.src;}
+  else{vid.style.display='none';vid.src='';img.style.display='block';img.src=p.src;}
+  document.getElementById('lb-meta').textContent=(p.name||'')+' · '+(idx+1)+'/'+photos.length;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLb(){document.getElementById('lightbox').classList.remove('open');var v=document.getElementById('lb-vid');v.pause();v.src='';}
+function lbBgClick(e){if(e.target===document.getElementById('lightbox'))closeLb();}
+async function lbStep(dir){var photos=await dbLoad(lbDay);lbIdx=(lbIdx+dir+photos.length)%photos.length;openLb(lbDay,lbIdx,photos);}
+function lbDl(){var p=lbPhotos[lbIdx];if(!p)return;var a=document.createElement('a');a.href=p.src;a.download='bcn-'+DNAMES[lbDay]+'-'+(lbIdx+1)+'.'+(p.type==='video'?'webm':'jpg');a.click();}
+document.addEventListener('keydown',function(e){var lb=document.getElementById('lightbox');if(!lb.classList.contains('open'))return;if(e.key==='Escape')closeLb();if(e.key==='ArrowLeft')lbStep(-1);if(e.key==='ArrowRight')lbStep(1);});
+
+/* ── BUILD PHOTO SECTIONS ── */
+/* ── GEOLOCATION → GOOGLE MAPS ── */
+
+// Destinazioni per ogni giornata (senza la partenza, che diventa la posizione attuale)
+var DAY_DESTINATIONS = [
+  // Mer 11: Barrio Gotico → Palau Musica → El Born
+  ['Barrio+G%C3%B3tico+Barcelona','Palau+de+la+M%C3%BAsica+Catalana+Barcelona','El+Born+Barcelona'],
+  // Gio 12: Mercat S.Caterina → Casa Batllo → Enigma → Bar Marsella
+  ['Mercat+de+Santa+Caterina+Barcelona','Casa+Batll%C3%B3+Barcelona','Enigma+Restaurant+Barcelona','Bar+Marsella+Barcelona'],
+  // Ven 13: Sagrada Familia → Park Guell → Gracia → Cuines S.Caterina
+  ['Sagrada+Familia+Barcelona','Park+G%C3%BCll+Barcelona','Pla%C3%A7a+Vila+de+Gr%C3%A0cia+Barcelona','Cuines+Santa+Caterina+Barcelona'],
+];
+
+function buildMapsUrl(originCoords, destinations) {
+  // originCoords: "lat,lng" string or null (uses 'current+location')
+  var origin = originCoords ? originCoords : 'current+location';
+  var url = 'https://www.google.com/maps/dir/' + origin;
+  destinations.forEach(function(d){ url += '/' + d; });
+  return url;
+}
+
+function openMapsFromHere(dayIdx) {
+  var dests = DAY_DESTINATIONS[dayIdx];
+  if (!dests) return;
+  var btn = event.currentTarget;
+  btn.textContent = '📍 Rilevando posizione...';
+  btn.disabled = true;
+
+  if (!navigator.geolocation) {
+    // No geolocation — open with 'current location' token (Google Maps handles it)
+    window.open(buildMapsUrl(null, dests), '_blank');
+    btn.textContent = '🗺 Apri percorso da qui';
+    btn.disabled = false;
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var coords = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
+      window.open(buildMapsUrl(coords, dests), '_blank');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Apri percorso da qui in Google Maps';
+      btn.disabled = false;
+    },
+    function(err) {
+      // Permission denied or error — fallback to 'current location' token
+      window.open(buildMapsUrl(null, dests), '_blank');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>Apri percorso in Google Maps';
+      btn.disabled = false;
+    },
+    {timeout: 6000, maximumAge: 60000}
+  );
+}
+
+function openMapsFromHereTo(destination) {
+  var btn = event.currentTarget;
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+
+  if (!navigator.geolocation) {
+    window.open('https://www.google.com/maps/dir/current+location/' + destination, '_blank');
+    btn.disabled = false;
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var coords = pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
+      window.open('https://www.google.com/maps/dir/' + coords + '/' + destination, '_blank');
+      btn.disabled = false;
+    },
+    function() {
+      window.open('https://www.google.com/maps/dir/current+location/' + destination, '_blank');
+      btn.disabled = false;
+    },
+    {timeout: 6000, maximumAge: 60000}
+  );
+}
+
+var DAY_DESTINATIONS = [
+  // Gio 11: Casa Batlló
+  ['Casa+Batll%C3%B3+Barcelona'],
+  // Ven 12: Sagrada Família → Park Güell → Gràcia
+  ['Sagrada+Familia+Barcelona','Park+G%C3%BCll+Barcelona','Placa+del+Sol+Gracia+Barcelona'],
+  // Sab 13: opzioni (usato solo per singola destinazione)
+  [],
+];
+
+var DAY_TITLES=['Giovedì 11','Venerdì 12','Sabato 13','Domenica 14'];
+function buildPhotoSection(day){
+  var el=document.getElementById('ps'+day);if(!el)return;
+  el.innerHTML=
+    '<div class="photo-section">'
+    +'<div class="photo-header">'
+    +'<div class="photo-title">📸 Foto &amp; Video — <span>'+DAY_TITLES[day]+'</span></div>'
+    +'<div class="photo-meta"><span class="photo-count" id="pc'+day+'">0 elementi</span></div>'
+    +'</div>'
+    +'<div class="upload-bar" id="dz'+day+'" '
+    +'ondragover="dzOver(event,'+day+')" ondragleave="dzLeave('+day+')" ondrop="dzDrop(event,'+day+')" '
+    +'onclick="if(!event.target.closest(\'button\')){this.querySelector(\'.file-inp\').click()}">'
+    +'<input class="file-inp" type="file" accept="image/*,video/*" multiple style="display:none" onchange="handleFiles('+day+',this.files)">'
+    +'<span class="upload-bar-icon">📎</span>'
+    +'<div class="upload-bar-text"><strong>Carica o trascina foto/video</strong><span>jpg, png, mp4, mov · max 10MB img · 100MB video</span></div>'
+    +'<div class="upload-bar-btns">'
+    +'<button class="ubtn ubtn-cam" onclick="openCamera('+day+')">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Camera</button>'
+    +'<button class="ubtn ubtn-dl" onclick="downloadAll('+day+')">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Scarica</button>'
+    +'<button class="ubtn" style="background:var(--oro);color:var(--blu);" onclick="exportPoster('+day+')">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Poster</button>'
+    +'</div>'
+    +'</div>'
+    +'<div class="pstatus" id="st'+day+'"></div>'
+    +'<div id="ci'+day+'"></div>'
+    +'</div>';
+}
+
+/* ── INIT ── */
+window.addEventListener('load',function(){
+  [0,1,2,3].forEach(function(d){buildPhotoSection(d);renderCollage(d);startSSE(d);});
+
+  // Auto-tab: apri la giornata corrente del viaggio
+  var defaultTab = getDefaultTab();
+  go(defaultTab);
+
+  // Hint swipe su mobile (sparisce dopo 3s)
+  var hint = document.createElement('div');
+  hint.className='swipe-hint'; hint.textContent='← scorri tra i giorni →';
+  document.body.appendChild(hint);
+  setTimeout(function(){hint.style.opacity='0'; hint.style.transition='opacity .5s';
+    setTimeout(function(){hint.remove();},500);},3000);
+
+  window.addEventListener('resize',function(){
+    Object.values(LMAPS).forEach(function(m){if(m)m.invalidateSize();});
+    [0,1,2,3].forEach(function(d){renderCollage(d);});
+  });
+});
+
+/* ══════════════════════════════════════════════
+   🎬  VIDEO GENERATOR — stile app
+══════════════════════════════════════════════ */
+var vidRecorder=null, vidChunks=[], vidBlob=null;
+
+// Colori app
+var VBG='#F5EFE6';
+var VBLU='#1A2E4A';
+var VORO='#C8A96E';
+
+// Funzioni helper globali per il video
+function vlerp(a,b,t){return a+(b-a)*Math.min(1,Math.max(0,t));}
+function veaseInOut(t){return t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+
+function openVidModal(){
+  document.getElementById('vid-modal').classList.add('open');
+  document.getElementById('vid-status').textContent='';
+  document.getElementById('vid-progress-wrap').style.display='none';
+  document.getElementById('vid-progress').style.width='0%';
+  document.getElementById('vid-dl-btn').style.display='none';
+  document.getElementById('vid-gen-btn').style.display='';
+  document.getElementById('vid-gen-btn').disabled=false;
+  document.getElementById('vid-gen-btn').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polygon points="5 3 19 12 5 21 5 3"/></svg> Genera video';
+  vidBlob=null;
+}
+function closeVidModal(){
+  document.getElementById('vid-modal').classList.remove('open');
+  if(vidRecorder&&vidRecorder.state!=='inactive') vidRecorder.stop();
+}
+
+function vText(ctx, text, x, y, font, color, align){
+  ctx.save();
+  ctx.font=font; ctx.textAlign=align||'center'; ctx.textBaseline='middle';
+  ctx.shadowColor='rgba(0,0,0,0.2)'; ctx.shadowBlur=8; ctx.shadowOffsetY=2;
+  ctx.fillStyle=color; ctx.fillText(text,x,y);
+  ctx.restore();
+}
+
+function vLine(ctx, cx, y, alpha){
+  ctx.save(); ctx.globalAlpha=alpha||0.5;
+  ctx.fillStyle=VORO; ctx.fillRect(cx-50,y,100,1.5); ctx.restore();
+}
+
+function drawBg(ctx, W, H){
+  ctx.fillStyle=VBG; ctx.fillRect(0,0,W,H);
+  ctx.save(); ctx.globalAlpha=0.15;
+  ctx.strokeStyle=VORO; ctx.lineWidth=2;
+  ctx.strokeRect(16,16,W-32,H-32);
+  ctx.restore();
+}
+
+function drawIntro(ctx, W, H, elapsed){
+  drawBg(ctx,W,H);
+  var f=Math.min(1,elapsed/1.5);
+  ctx.save(); ctx.globalAlpha=f;
+  // Angolini decorativi
+  ctx.strokeStyle=VORO; ctx.lineWidth=2; ctx.globalAlpha=f*0.5;
+  [[0,0],[W,0],[0,H],[W,H]].forEach(function(c,ci){
+    var sx=ci%2===0?1:-1, sy=ci<2?1:-1, s=28;
+    ctx.beginPath(); ctx.moveTo(c[0]+sx*s,c[1]); ctx.lineTo(c[0],c[1]); ctx.lineTo(c[0],c[1]+sy*s); ctx.stroke();
+  });
+  ctx.globalAlpha=f;
+  vText(ctx,'SPINOFF FANTAVIAGGIO',W/2,H/2-120,'600 '+(W*0.016)+'px "DM Sans",sans-serif',VORO);
+  vLine(ctx,W/2,H/2-96,0.35);
+  vText(ctx,'Barcellona',W/2,H/2-40,'700 '+(W*0.075)+'px "Playfair Display",Georgia,serif',VBLU);
+  vText(ctx,'11 – 14 Giugno 2026',W/2,H/2+26,'300 '+(W*0.026)+'px "DM Sans",sans-serif',VBLU);
+  vLine(ctx,W/2,H/2+55,0.3);
+  vText(ctx,'9 partecipanti',W/2,H/2+78,'500 '+(W*0.018)+'px "DM Sans",sans-serif',VORO);
+  ctx.restore();
+}
+
+function drawDayCard(ctx, W, H, badge, title, fade){
+  drawBg(ctx,W,H);
+  var f=Math.max(0,Math.min(1,fade));
+  ctx.save(); ctx.globalAlpha=f;
+  // Badge
+  var bw=Math.round(W*0.32), bh=Math.round(H*0.07), bx=W/2-bw/2, by=H/2-80, r=bh/2;
+  ctx.fillStyle=VBLU;
+  ctx.beginPath(); ctx.moveTo(bx+r,by); ctx.arcTo(bx+bw,by,bx+bw,by+bh,r); ctx.arcTo(bx+bw,by+bh,bx,by+bh,r); ctx.arcTo(bx,by+bh,bx,by,r); ctx.arcTo(bx,by,bx+bw,by,r); ctx.closePath(); ctx.fill();
+  vText(ctx,badge,W/2,by+bh/2,'600 '+(W*0.013)+'px "DM Sans",sans-serif',VORO);
+  vText(ctx,title,W/2,H/2+10,'700 '+(W*0.046)+'px "Playfair Display",Georgia,serif',VBLU);
+  vLine(ctx,W/2,H/2+50,0.35);
+  ctx.restore();
+}
+
+function drawPolaroid(ctx, img, W, H, progress, pidx, swing){
+  drawBg(ctx,W,H);
+
+  var ir=img.naturalWidth/img.naturalHeight||1;
+
+  // Bordo sottile fisso, didascalia minima
+  var BORDER=8;
+  var BOTTOM=36;
+
+  // Foto più grande possibile — occupa fino all'85% del canvas
+  var maxImgW=Math.round(W*0.82);
+  var maxImgH=Math.round(H*0.80);
+
+  var imgW, imgH;
+  if(ir>=1){
+    imgW=maxImgW; imgH=Math.round(imgW/ir);
+    if(imgH>maxImgH){imgH=maxImgH; imgW=Math.round(imgH*ir);}
+  } else {
+    imgH=maxImgH; imgW=Math.round(imgH*ir);
+    if(imgW>maxImgW){imgW=maxImgW; imgH=Math.round(imgW/ir);}
+  }
+
+  var polW=imgW+BORDER*2;
+  var polH=imgH+BORDER*2+BOTTOM;
+
+  var zoom=1+progress*0.015;
+  var panX=swing*vlerp(-4,4,progress);
+  var panY=vlerp(2,-2,progress);
+  var rot0=pidx%2===0?-1.5:1.3;
+  var rot=rot0*(1-progress*0.5);
+
+  ctx.save();
+  ctx.translate(W/2+panX, H/2+panY);
+  ctx.rotate(rot*Math.PI/180);
+  ctx.scale(zoom,zoom);
+  ctx.translate(-W/2,-H/2);
+
+  var px=Math.round((W-polW)/2);
+  var py=Math.round((H-polH)/2);
+
+  // Ombra
+  ctx.shadowColor='rgba(26,46,74,0.22)';
+  ctx.shadowBlur=10; ctx.shadowOffsetY=5;
+  ctx.fillStyle='#fffef8';
+  ctx.fillRect(px,py,polW,polH);
+  ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+
+  // Foto — intera, nessun taglio
+  ctx.drawImage(img, px+BORDER, py+BORDER, imgW, imgH);
+
+  // Separatore
+  ctx.fillStyle='rgba(200,169,110,0.18)';
+  ctx.fillRect(px+BORDER, py+BORDER+imgH, imgW, 1);
+
+  // Didascalia piccola
+  ctx.font='400 '+Math.round(BOTTOM*0.45)+'px "DM Sans",sans-serif';
+  ctx.fillStyle='rgba(26,46,74,0.38)'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Barcellona 2026', px+polW/2, py+polH-BOTTOM/2);
+
+  ctx.restore();
+
+  // Nastro adesivo
+  if(pidx%3!==1){
+    var tx=W/2+(pidx%2===0?-polW*0.06:polW*0.05);
+    var ty=H/2-polH*zoom/2+1;
+    ctx.save(); ctx.translate(tx,ty); ctx.rotate((pidx%2===0?-6:5)*Math.PI/180);
+    ctx.fillStyle='rgba(255,215,80,0.45)';
+    ctx.fillRect(-20,-7,40,14);
+    ctx.restore();
+  }
+}
+
+function drawOutro(ctx, W, H, elapsed, total){
+  drawBg(ctx,W,H);
+  var f=Math.min(1,elapsed/0.8);
+  var fo=elapsed>total-1?1-(elapsed-(total-1)):1;
+  ctx.save(); ctx.globalAlpha=Math.max(0,Math.min(f,fo));
+  vLine(ctx,W/2,H/2-45,0.4);
+  vText(ctx,'Buon viaggio! 🥂',W/2,H/2,'700 '+(W*0.048)+'px "Playfair Display",Georgia,serif',VBLU);
+  vText(ctx,'Barcellona · 2026',W/2,H/2+52,'400 '+(W*0.022)+'px "DM Sans",sans-serif',VORO);
+  vLine(ctx,W/2,H/2+78,0.4);
+  ctx.restore();
+}
+
+async function generateVideo(){
+  var btn=document.getElementById('vid-gen-btn');
+  var status=document.getElementById('vid-status');
+  var progWrap=document.getElementById('vid-progress-wrap');
+  var prog=document.getElementById('vid-progress');
+
+  btn.disabled=true;
+  status.textContent='Recupero foto da Supabase...';
+  progWrap.style.display='block'; prog.style.width='5%';
+
+  // Carica foto da tutti i giorni
+  var allPhotos=[];
+  for(var d=0;d<4;d++){
+    var photos=await dbLoad(d);
+    photos.forEach(function(p){ if(p.type==='photo') allPhotos.push({p:p,day:d}); });
+  }
+  if(allPhotos.length===0){
+    status.textContent='⚠️ Nessuna foto trovata!';
+    btn.disabled=false; return;
+  }
+
+  status.textContent='Caricamento '+allPhotos.length+' immagini...';
+  prog.style.width='15%';
+
+  // Carica immagini — usa blob URL per evitare problemi CORS col canvas
+  var loaded=[];
+  for(var i=0;i<allPhotos.length;i++){
+    prog.style.width=Math.round(15+i/allPhotos.length*50)+'%';
+    try{
+      var entry=allPhotos[i];
+      // Scarica come blob per aggirare CORS
+      var resp=await fetch(entry.p.src);
+      var blob=await resp.blob();
+      var blobUrl=URL.createObjectURL(blob);
+      var im=await new Promise(function(res,rej){
+        var img=new Image();
+        img.onload=function(){res(img);}; img.onerror=rej;
+        img.src=blobUrl;
+      });
+      im._name=entry.p.name||'';
+      im._day=entry.day;
+      im._blobUrl=blobUrl;
+      loaded.push(im);
+    }catch(e){ console.warn('Skip foto',i,e); }
+  }
+
+  if(!loaded.length){
+    status.textContent='⚠️ Impossibile caricare immagini. Controlla connessione.';
+    btn.disabled=false; return;
+  }
+
+  status.textContent='Preparazione video...';
+  prog.style.width='68%';
+
+  var dayLabels=[
+    {badge:'Giorno 1 · Giovedì 11 Giugno', title:'Arrivo & Casa Batlló'},
+    {badge:'Giorno 2 · Venerdì 12 Giugno', title:'Sagrada Família & Park Güell'},
+    {badge:'Giorno 3 · Sabato 13 Giugno',  title:'Giornata Libera'},
+    {badge:'Giorno 4 · Domenica 14 Giugno',title:'Colazione & Partenza'}
+  ];
+
+  var W=1280, H=720;
+  var canvas=document.getElementById('vid-canvas');
+  canvas.width=W; canvas.height=H; canvas.style.display='none';
+  var ctx2d=canvas.getContext('2d');
+
+  // Disegna subito un frame sul canvas PRIMA di captureStream
+  drawBg(ctx2d,W,H);
+  // Piccola pausa per assicurarsi che il canvas abbia contenuto
+  await new Promise(function(r){setTimeout(r,100);});
+
+  var INTRO=4.0, DAY_CARD=2.0, PER_PHOTO=3.5, TRANS=0.5, OUTRO=3.0;
+
+  // Costruisci sequenza
+  var seq=[{type:'intro',dur:INTRO}];
+  var seenDays=[];
+  loaded.forEach(function(img,i){
+    if(seenDays.indexOf(img._day)===-1){
+      seenDays.push(img._day);
+      seq.push({type:'day',day:img._day,dur:DAY_CARD});
+    }
+    seq.push({type:'photo',img:img,idx:i,dur:PER_PHOTO,trans:i<loaded.length-1?TRANS:0});
+  });
+  seq.push({type:'outro',dur:OUTRO});
+
+  // Seleziona il miglior formato supportato — stesso ordine su tutti i browser
+  // Safari iOS 14.5+ supporta mp4/avc1, Chrome supporta webm/vp9
+  var mimeList = [
+    'video/mp4;codecs=avc1,mp4a.40.2',
+    'video/mp4;codecs=avc1',
+    'video/mp4',
+    'video/webm;codecs=vp9',
+    'video/webm;codecs=vp8',
+    'video/webm'
+  ];
+  var mime = mimeList.find(function(m){ return MediaRecorder.isTypeSupported(m); });
+  if(!mime){
+    status.textContent='⚠️ Browser non supportato per la generazione video.';
+    btn.disabled=false; return;
+  }
+  var ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
+
+  var canvasStream = canvas.captureStream(25);
+  // Bitrate uniforme — Safari lo ignora silenziosamente, Chrome lo usa
+  var vidRecOpts = {mimeType: mime, videoBitsPerSecond: 8000000};
+  vidRecorder = new MediaRecorder(canvasStream, vidRecOpts);
+  vidChunks = [];
+  vidRecorder.ondataavailable = function(e){ if(e.data && e.data.size > 0) vidChunks.push(e.data); };
+  vidRecorder.onstop = function(){
+    loaded.forEach(function(im){ if(im._blobUrl) URL.revokeObjectURL(im._blobUrl); });
+    if(vidChunks.length === 0){
+      status.textContent = '⚠️ Nessun dato registrato — riprova';
+      btn.disabled = false; return;
+    }
+    vidBlob = new Blob(vidChunks, {type: mime});
+    prog.style.width = '100%';
+    status.textContent = '✅ Pronto! ' + Math.round(vidBlob.size/1024/1024*10)/10 + ' MB (' + ext.toUpperCase() + ')';
+    var dlBtn = document.getElementById('vid-dl-btn');
+    dlBtn.style.display = '';
+    dlBtn.dataset.ext = ext;
+  };
+
+  vidRecorder.start(500);
+
+  var FPS=25, FRAME_MS=Math.round(1000/FPS);
+  var startT=Date.now();
+  var seqIdx=0, seqStart=0;
+  var renderInterval=null, stopped=false;
+
+  function stopRec(){
+    if(stopped) return; stopped=true;
+    clearInterval(renderInterval);
+    setTimeout(function(){
+      if(vidRecorder.state!=='inactive') vidRecorder.stop();
+    },600);
+  }
+
+  function renderFrame(){
+    try{
+      var now=(Date.now()-startT)/1000;
+      if(!seq[seqIdx]){stopRec();return;}
+      var elapsed=now-seqStart;
+
+      // Avanza sequenza
+      while(seq[seqIdx]&&elapsed>=seq[seqIdx].dur){
+        seqStart+=seq[seqIdx].dur;
+        seqIdx++;
+        elapsed=now-seqStart;
+      }
+      if(!seq[seqIdx]){stopRec();return;}
+
+      var cur=seq[seqIdx];
+      var t=Math.min(1,Math.max(0,elapsed/cur.dur));
+
+      if(cur.type==='intro'){
+        drawIntro(ctx2d,W,H,elapsed);
+      } else if(cur.type==='day'){
+        var fi=Math.min(1,elapsed/0.5)*Math.min(1,(cur.dur-elapsed)/0.4);
+        drawDayCard(ctx2d,W,H,dayLabels[cur.day].badge,dayLabels[cur.day].title,fi);
+      } else if(cur.type==='photo'){
+        var sw=cur.idx%2===0?1:-1;
+        drawPolaroid(ctx2d,cur.img,W,H,t,cur.idx%10,sw);
+        // Fade in
+        if(elapsed<TRANS){
+          ctx2d.save(); ctx2d.globalAlpha=Math.max(0,1-veaseInOut(elapsed/TRANS));
+          drawBg(ctx2d,W,H); ctx2d.restore();
+        }
+        // Fade out
+        if(cur.trans>0&&elapsed>cur.dur-cur.trans){
+          var ft=veaseInOut((elapsed-(cur.dur-cur.trans))/cur.trans);
+          ctx2d.save(); ctx2d.globalAlpha=Math.min(1,ft);
+          drawBg(ctx2d,W,H); ctx2d.restore();
+        }
+      } else if(cur.type==='outro'){
+        drawOutro(ctx2d,W,H,elapsed,cur.dur);
+      }
+
+      prog.style.width=Math.min(97,Math.round(70+seqIdx/seq.length*28))+'%';
+      status.textContent='🎬 '+Math.round(seqIdx/seq.length*100)+'% — '+Math.round(now)+'s / '+Math.round(seq.reduce(function(s,x){return s+x.dur;},0))+'s';
+
+    }catch(err){
+      console.error('Render error:',err);
+      clearInterval(renderInterval);
+      status.textContent='⚠️ '+err.message;
+      btn.disabled=false;
+      if(vidRecorder&&vidRecorder.state!=='inactive') vidRecorder.stop();
+    }
+  }
+
+  // Primo frame immediato, poi intervallo
+  renderFrame();
+  renderInterval=setInterval(renderFrame,FRAME_MS);
+}
+
+function downloadVideo(){
+  if(!vidBlob) return;
+  var ext = document.getElementById('vid-dl-btn').dataset.ext || (vidBlob.type.includes('mp4')?'mp4':'webm');
+  var url=URL.createObjectURL(vidBlob);
+  var a=document.createElement('a');
+  a.href=url; a.download='Barcellona-2025-viaggio.'+ext;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},5000);
+  showToast('📥 Video scaricato!');
+}
+
+/* ══════════════════════════════════════════════
+   🖼  POSTER EXPORT
+══════════════════════════════════════════════ */
+
+var DAY_POSTER_META=[
+  {badge:'Giorno 1 · Giovedì 11 Giugno', title:'Arrivo & Casa Batlló'},
+  {badge:'Giorno 2 · Venerdì 12 Giugno', title:'Sagrada Família & Park Güell'},
+  {badge:'Giorno 3 · Sabato 13 Giugno',  title:'Giornata Libera'},
+  {badge:'Giorno 4 · Domenica 14 Giugno',title:'Colazione & Partenza'}
+];
+
+// Carica immagine via fetch blob per evitare CORS
+async function fetchImg(src){
+  var resp=await fetch(src);
+  var blob=await resp.blob();
+  var burl=URL.createObjectURL(blob);
+  return await new Promise(function(res,rej){
+    var img=new Image();
+    img.onload=function(){res({img:img,burl:burl});};
+    img.onerror=function(){URL.revokeObjectURL(burl);rej();};
+    img.src=burl;
+  });
+}
+
+// Disegna sfondo poster
+function pDrawBg(ctx,W,H){
+  var gr=ctx.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,'#faf4eb'); gr.addColorStop(1,'#f0e6d3');
+  ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
+}
+
+// Disegna cornice oro
+function pDrawFrame(ctx,W,H){
+  var m=30;
+  ctx.save(); ctx.globalAlpha=0.5;
+  ctx.strokeStyle='#C8A96E'; ctx.lineWidth=4;
+  ctx.strokeRect(m,m,W-m*2,H-m*2);
+  ctx.globalAlpha=0.2; ctx.lineWidth=1.5;
+  ctx.strokeRect(m+10,m+10,W-m*2-20,H-m*2-20);
+  ctx.restore();
+}
+
+// Disegna una polaroid sul canvas — si adatta all'aspect ratio della foto
+function pDrawPolaroid(ctx,img,px,py,polW,rot,bord,botPad){
+  var ir=img.naturalWidth/img.naturalHeight||1;
+  var imgW=polW-bord*2;
+  var imgH=Math.round(imgW/ir); // altezza reale senza taglio
+  var polH=imgH+bord*2+botPad;
+
+  ctx.save();
+  ctx.translate(px+polW/2, py+polH/2);
+  ctx.rotate(rot*Math.PI/180);
+  ctx.translate(-polW/2,-polH/2);
+
+  // Ombra
+  ctx.shadowColor='rgba(26,46,74,0.2)'; ctx.shadowBlur=20; ctx.shadowOffsetY=8;
+  ctx.fillStyle='#fffef8'; ctx.fillRect(0,0,polW,polH);
+  ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+
+  // Foto interna — intera, nessun taglio
+  ctx.drawImage(img, bord, bord, imgW, imgH);
+
+  // Bordo interno sottile
+  ctx.strokeStyle='rgba(200,169,110,0.15)'; ctx.lineWidth=1;
+  ctx.strokeRect(bord,bord,imgW,imgH);
+
+  ctx.restore();
+  return polH; // restituisce altezza reale per calcolo layout
+}
+
+async function exportAllPoster(){
+  showToast('⏳ Generazione poster...');
+
+  // Carica tutte le foto per giornata
+  var dayData=[];
+  for(var d=0;d<4;d++){
+    var photos=(await dbLoad(d)).filter(function(p){return p.type==='photo';});
+    if(!photos.length) continue;
+    var imgs=[];
+    for(var i=0;i<photos.length;i++){
+      try{ var r=await fetchImg(photos[i].src); imgs.push(r); }catch(e){}
+    }
+    if(imgs.length) dayData.push({day:d,meta:DAY_POSTER_META[d],imgs:imgs});
+  }
+
+  if(!dayData.length){showToast('⚠️ Nessuna foto trovata!');return;}
+
+  var W=3200, PAD=120, COLS=4;
+  var POL_W=Math.floor((W-PAD*2-(COLS-1)*30)/COLS);
+  var POL_BORD=Math.round(POL_W*0.04);
+  var POL_BOT=Math.round(POL_W*0.10);
+  var HEAD_H=170, DAY_HEAD_H=120, SECTION_PAD=60;
+
+  // Pre-calcola altezza foto per ogni giornata (proporzioni reali)
+  function getPolH(img){ var ir=img.naturalWidth/img.naturalHeight||1; var iw=POL_W-POL_BORD*2; return Math.round(iw/ir)+POL_BORD*2+POL_BOT; }
+  function getRowMaxH(imgs,row){ var mx=0; for(var c=0;c<COLS;c++){var i=row*COLS+c;if(i<imgs.length){var h=getPolH(imgs[i].img);if(h>mx)mx=h;}} return mx; }
+
+  var H=HEAD_H+PAD;
+  dayData.forEach(function(dd){
+    H+=DAY_HEAD_H;
+    for(var row=0;row<Math.ceil(dd.imgs.length/COLS);row++) H+=getRowMaxH(dd.imgs,row)+30;
+    H+=SECTION_PAD;
+  });
+  H+=PAD+60;
+
+  var canvas=document.getElementById('poster-canvas');
+  canvas.width=W; canvas.height=H;
+  var ctx=canvas.getContext('2d');
+
+  pDrawBg(ctx,W,H);
+  pDrawFrame(ctx,W,H);
+
+  // Header globale
+  var hY=60;
+  // Linea oro top
+  ctx.fillStyle='#C8A96E'; ctx.globalAlpha=0.5;
+  ctx.fillRect(PAD,hY,W-PAD*2,3); ctx.globalAlpha=1;
+  // Titolo
+  ctx.font='bold 80px "Playfair Display",Georgia,serif';
+  ctx.fillStyle='#1A2E4A'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Barcellona',W/2,hY+55);
+  ctx.font='300 32px "DM Sans",sans-serif';
+  ctx.fillStyle='rgba(26,46,74,0.65)';
+  ctx.fillText('11 – 14 Giugno 2026  ·  Spinoff Fantaviaggio  ·  9 partecipanti',W/2,hY+105);
+  ctx.fillStyle='#C8A96E'; ctx.globalAlpha=0.4;
+  ctx.fillRect(PAD,hY+130,W-PAD*2,2); ctx.globalAlpha=1;
+
+  var curY=HEAD_H+PAD;
+  var rotCycle=[-1.8,1.5,-1.2,2.0,-0.8,1.8,-2.2,1.2,-1.5,2.2];
+
+  dayData.forEach(function(dd,di){
+    // Titolo giornata
+    // Badge blu
+    var bw=420,bh=44,bx=PAD,by=curY+8;
+    var r=bh/2;
+    ctx.fillStyle='#1A2E4A';
+    ctx.beginPath();
+    ctx.moveTo(bx+r,by); ctx.arcTo(bx+bw,by,bx+bw,by+bh,r);
+    ctx.arcTo(bx+bw,by+bh,bx,by+bh,r); ctx.arcTo(bx,by+bh,bx,by,r);
+    ctx.arcTo(bx,by,bx+bw,by,r); ctx.closePath(); ctx.fill();
+    ctx.font='500 22px "DM Sans",sans-serif';
+    ctx.fillStyle='#C8A96E'; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillText(dd.meta.badge,bx+r+10,by+bh/2);
+    // Titolo grande
+    ctx.font='bold 52px "Playfair Display",Georgia,serif';
+    ctx.fillStyle='#1A2E4A'; ctx.textAlign='left';
+    ctx.fillText(dd.meta.title,PAD,curY+90);
+    curY+=DAY_HEAD_H+10;
+
+    // Polaroid per riga — altezza adattiva per ogni riga
+    var nRows=Math.ceil(dd.imgs.length/COLS);
+    for(var row=0;row<nRows;row++){
+      var rowH=getRowMaxH(dd.imgs,row);
+      for(var col=0;col<COLS;col++){
+        var ii=row*COLS+col; if(ii>=dd.imgs.length) break;
+        var px=PAD+col*(POL_W+30);
+        var rot=rotCycle[(di*7+ii)%rotCycle.length];
+        pDrawPolaroid(ctx,dd.imgs[ii].img,px,curY,POL_W,rot,POL_BORD,POL_BOT);
+      }
+      curY+=rowH+30;
+    }
+    curY+=SECTION_PAD;
+
+    // Separatore tra giornate
+    if(di<dayData.length-1){
+      ctx.fillStyle='rgba(200,169,110,0.25)';
+      ctx.fillRect(PAD,curY-SECTION_PAD/2,W-PAD*2,1.5);
+    }
+  });
+
+  // Footer
+  ctx.font='400 24px "DM Sans",sans-serif';
+  ctx.fillStyle='rgba(26,46,74,0.4)'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Barcellona · 2026 · Spinoff Fantaviaggio',W/2,H-50);
+  ctx.fillStyle='rgba(200,169,110,0.4)';
+  ctx.fillRect(PAD,H-70,W-PAD*2,1.5);
+
+  // Scarica
+  var dataURL=canvas.toDataURL('image/jpeg',0.97);
+  var a=document.createElement('a');
+  a.href=dataURL; a.download='Barcellona-2025-poster.jpg';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+
+  // Libera blob URL
+  dayData.forEach(function(dd){
+    dd.imgs.forEach(function(e){URL.revokeObjectURL(e.burl);});
+  });
+  showToast('📥 Poster scaricato!');
+}
+
+// Export singola giornata — richiamato dal bottone in ogni sezione
+async function exportPoster(day){
+  showToast('⏳ Generazione poster giornata...');
+  var photos=(await dbLoad(day)).filter(function(p){return p.type==='photo';});
+  if(!photos.length){showToast('⚠️ Nessuna foto in questa giornata!');return;}
+  var imgs=[];
+  for(var i=0;i<photos.length;i++){
+    try{ var r=await fetchImg(photos[i].src); imgs.push(r); }catch(e){}
+  }
+  if(!imgs.length){showToast('⚠️ Impossibile caricare le foto.');return;}
+
+  var W=3200, PAD=120, COLS=4;
+  var POL_W=Math.floor((W-PAD*2-(COLS-1)*30)/COLS);
+  var POL_BORD=Math.round(POL_W*0.04);
+  var POL_BOT=Math.round(POL_W*0.10);
+  var HEAD_H=200;
+
+  // Calcola altezza per ogni riga usando proporzioni reali
+  function spGetPolH(img){var ir=img.naturalWidth/img.naturalHeight||1;var iw=POL_W-POL_BORD*2;return Math.round(iw/ir)+POL_BORD*2+POL_BOT;}
+  function spRowMaxH(row){var mx=0;for(var c=0;c<COLS;c++){var i=row*COLS+c;if(i<imgs.length){var h=spGetPolH(imgs[i].img);if(h>mx)mx=h;}}return mx;}
+  var nRows=Math.ceil(imgs.length/COLS);
+  var H=HEAD_H;
+  for(var rr=0;rr<nRows;rr++) H+=spRowMaxH(rr)+30;
+  H+=PAD*2;
+
+  var canvas=document.getElementById('poster-canvas');
+  canvas.width=W; canvas.height=H;
+  var ctx=canvas.getContext('2d');
+  pDrawBg(ctx,W,H); pDrawFrame(ctx,W,H);
+
+  // Header
+  var meta=DAY_POSTER_META[day];
+  var bw=520,bh=48,bx=PAD,by=50,r=bh/2;
+  ctx.fillStyle='#1A2E4A';
+  ctx.beginPath();
+  ctx.moveTo(bx+r,by); ctx.arcTo(bx+bw,by,bx+bw,by+bh,r);
+  ctx.arcTo(bx+bw,by+bh,bx,by+bh,r); ctx.arcTo(bx,by+bh,bx,by,r);
+  ctx.arcTo(bx,by,bx+bw,by,r); ctx.closePath(); ctx.fill();
+  ctx.font='500 24px "DM Sans",sans-serif';
+  ctx.fillStyle='#C8A96E'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(meta.badge,bx+r+12,by+bh/2);
+  ctx.font='bold 68px "Playfair Display",Georgia,serif';
+  ctx.fillStyle='#1A2E4A'; ctx.textAlign='left';
+  ctx.fillText(meta.title,PAD,135);
+  ctx.fillStyle='rgba(200,169,110,0.4)'; ctx.fillRect(PAD,172,W-PAD*2,2);
+
+  var rotCycle=[-1.8,1.5,-1.2,2.0,-0.8,1.8,-2.2,1.2];
+  var curY=HEAD_H;
+  for(var row=0;row<nRows;row++){
+    var rowH=spRowMaxH(row);
+    for(var col=0;col<COLS;col++){
+      var i=row*COLS+col; if(i>=imgs.length) break;
+      var px=PAD+col*(POL_W+30);
+      pDrawPolaroid(ctx,imgs[i].img,px,curY,POL_W,rotCycle[i%rotCycle.length],POL_BORD,POL_BOT);
+    }
+    curY+=rowH+30;
+  }
+
+  var dataURL=canvas.toDataURL('image/jpeg',0.97);
+  var a=document.createElement('a');
+  a.href=dataURL; a.download='Barcellona-'+DNAMES[day]+'-poster.jpg';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  imgs.forEach(function(e){URL.revokeObjectURL(e.burl);});
+  showToast('📥 Poster scaricato!');
+}
+</script>
+</body>
+</html>
