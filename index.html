@@ -1754,10 +1754,36 @@ function drawOutro(ctx, W, H, elapsed, total){
   var f=Math.min(1,elapsed/0.8);
   var fo=elapsed>total-1?1-(elapsed-(total-1)):1;
   ctx.save(); ctx.globalAlpha=Math.max(0,Math.min(f,fo));
-  vLine(ctx,W/2,H/2-45,0.4);
-  vText(ctx,'Buon viaggio! 🥂',W/2,H/2,'700 '+(W*0.048)+'px "Playfair Display",Georgia,serif',VBLU);
-  vText(ctx,'Barcellona · 2026',W/2,H/2+52,'400 '+(W*0.022)+'px "DM Sans",sans-serif',VORO);
-  vLine(ctx,W/2,H/2+78,0.4);
+
+  var names=[
+    'Valentino Calcagno','Valentino Simone','Valentino Fellone',
+    'Rocco Sarli','Nicola Palmieri','Giuseppe Malatesta',
+    'Francesco Sarli','Mariano Maiorino','Domenico Marrone'
+  ];
+
+  // Titolo
+  vLine(ctx,W/2,H*0.12,0.4);
+  vText(ctx,'Barcellona 2026',W/2,H*0.22,'700 '+(W*0.038)+'px "Playfair Display",Georgia,serif',VBLU);
+  vLine(ctx,W/2,H*0.32,0.4);
+
+  // Nomi in griglia 3x3
+  var cols=3, rows=3;
+  var cellW=W/cols, cellH=(H*0.52)/rows;
+  var startY=H*0.36;
+  names.forEach(function(name,i){
+    var col=i%cols, row=Math.floor(i/cols);
+    var cx=cellW*col+cellW/2;
+    var cy=startY+cellH*row+cellH/2;
+    // Separatore nome/cognome
+    var parts=name.split(' ');
+    var cognome=parts[parts.length-1];
+    var nome=parts.slice(0,-1).join(' ');
+    vText(ctx,nome,cx,cy-H*0.018,'300 '+(W*0.016)+'px "DM Sans",sans-serif','rgba(26,46,74,0.5)');
+    vText(ctx,cognome,cx,cy+H*0.018,'600 '+(W*0.022)+'px "DM Sans",sans-serif',VBLU);
+  });
+
+  vLine(ctx,W/2,H*0.9,0.3);
+  vText(ctx,'Spinoff FantaViaggio',W/2,H*0.95,'400 '+(W*0.014)+'px "DM Sans",sans-serif',VORO);
   ctx.restore();
 }
 
